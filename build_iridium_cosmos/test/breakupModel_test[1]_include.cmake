@@ -1,0 +1,5 @@
+if(EXISTS "/home/andrea/NASA-breakup-model-cpp/build/test/breakupModel_test[1]_tests.cmake")
+  include("/home/andrea/NASA-breakup-model-cpp/build/test/breakupModel_test[1]_tests.cmake")
+else()
+  add_test(breakupModel_test_NOT_BUILT breakupModel_test_NOT_BUILT)
+endif()

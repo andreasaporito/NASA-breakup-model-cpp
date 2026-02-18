@@ -1,0 +1,3 @@
+ID,Name,Satellite Type,Characteristic Length [m],A/M [m^2/kg],Area [m^2],Mass [kg],Ejection Velocity [m/s],Velocity [m/s],Position [m]
+1,Target,SPACECRAFT,1.3753483527877675,0.014856458859903537,1.4856458859903536,100,[0 0 0],[0 0 0],[0 0 0]
+2,Projectile,SPACECRAFT,0.005432029840813805,0.06263433220827352,2.3174702917061205e-05,0.00037,[0 0 0],[4500 0 0],[0 0 0]
