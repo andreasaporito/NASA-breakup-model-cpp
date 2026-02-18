@@ -11,4 +11,4 @@ satellites:
     satType: SPACECRAFT
     mass: 500.0                #https://en.wikipedia.org/wiki/DF-21
     velocity: [9360.0, 0, 0]
-    position: [0, 0, 0]
+    position: [40, 20, 100]

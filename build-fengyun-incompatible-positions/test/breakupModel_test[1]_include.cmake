@@ -1,0 +1,5 @@
+if(EXISTS "/home/andrea/LSMS_project/NASA-breakup-model-cpp/build-fengyun-incompatible-positions/test/breakupModel_test[1]_tests.cmake")
+  include("/home/andrea/LSMS_project/NASA-breakup-model-cpp/build-fengyun-incompatible-positions/test/breakupModel_test[1]_tests.cmake")
+else()
+  add_test(breakupModel_test_NOT_BUILT breakupModel_test_NOT_BUILT)
+endif()

@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/input/RuntimeInputSource.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/input/RuntimeInputSource.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/input/TLEReader.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/input/TLEReader.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/input/TLESatcatDataReader.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/input/TLESatcatDataReader.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/input/YAMLConfigurationReader.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/input/YAMLConfigurationReader.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/input/YAMLDataReader.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/input/YAMLDataReader.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/model/OrbitalElements.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/model/OrbitalElements.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/model/OrbitalElementsFactory.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/model/OrbitalElementsFactory.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/model/Satellite.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/model/Satellite.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/model/SatelliteBuilder.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/model/SatelliteBuilder.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/model/Satellites.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/model/Satellites.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/output/CSVPatternWriter.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/output/CSVPatternWriter.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/output/CSVWriter.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/output/CSVWriter.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/output/VTKWriter.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/output/VTKWriter.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/simulation/Breakup.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/simulation/Breakup.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/simulation/BreakupBuilder.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/simulation/BreakupBuilder.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/simulation/Collision.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/simulation/Collision.cpp.o.d"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/simulation/Explosion.cpp.o"
+  "CMakeFiles/breakupModel_lib.dir/src/breakupModel/simulation/Explosion.cpp.o.d"
+  "libbreakupModel_lib.a"
+  "libbreakupModel_lib.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/breakupModel_lib.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
