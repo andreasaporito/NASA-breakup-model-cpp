@@ -1,0 +1,20 @@
+---
+# CONFIGURATION: SMALL RADIUS scenario (compact geometry)
+# Iridium 33:   radius 1.0 m → 0.5 m (-50%, compact)
+# Kosmos 2251:  radius 1.1 m → 0.6 m (-45%, compact)
+# Small impact area = lower energy density = FEWER fragments
+# Collision velocity: 15 km/s head-on (manual position/velocity)
+# Input: Compact satellite geometry test
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/data_analysis_radius_small.yaml"]  # Use the custom satellite configuration with small radius
+
+inputOutput:
+  target: ["analysis_radius_small_input.csv", "analysis_radius_small_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["analysis_radius_small_result.csv", "analysis_radius_small_result.vtu"]
+  kepler: False

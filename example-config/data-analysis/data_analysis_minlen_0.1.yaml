@@ -1,0 +1,17 @@
+---
+# TEST: Minimum Characteristic Length = 0.1 m
+# Baseline collision (7.6 km/s relative velocity)
+# Default satellite masses: Iridium 33 (556 kg) vs Kosmos 2251 (900 kg)
+satellites:
+  - name: "Iridium 33"
+    id: 24946
+    satType: SPACECRAFT
+    mass: 556.0                    # kg
+    radius: 1.0                    # m (default spherical approximation)
+    kepler: "../example-config/iridium_cosmos_tle.txt"
+  - name: "Kosmos 2251"
+    id: 22675
+    satType: SPACECRAFT
+    mass: 900.0                    # kg
+    radius: 1.1                    # m (default spherical approximation)
+    kepler: "../example-config/iridium_cosmos_tle.txt"

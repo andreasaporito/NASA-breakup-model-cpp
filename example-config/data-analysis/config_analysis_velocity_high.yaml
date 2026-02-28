@@ -1,0 +1,19 @@
+---
+# CONFIGURATION: High Relative Velocity (~15 km/s head-on)
+# Identical to velocity_negative - head-on approach
+# Relative velocity: 7.5 + 7.5 = 15 km/s collision speed
+# Input: Manual position/velocity (head-on geometry)
+# Expected: EXTREME fragmentation
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/data_analysis_velocity_high.yaml"]  # Use the custom satellite configuration with high relative velocity
+
+inputOutput:
+  target: ["analysis_velocity_high_input.csv", "analysis_velocity_high_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["analysis_velocity_high_result.csv", "analysis_velocity_high_result.vtu"]
+  kepler: False

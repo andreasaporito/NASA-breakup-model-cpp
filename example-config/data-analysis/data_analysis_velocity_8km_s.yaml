@@ -1,0 +1,18 @@
+---
+# TEST: 8 km/s Relative Velocity
+# Near head-on approach
+satellites:
+  - id: 24946
+    name: "Iridium 33 (v=+7.5 km/s)"
+    satType: SPACECRAFT
+    mass: 556.0
+    radius: 1.0
+    position: [6800000, 0, 0]
+    velocity: [7500, 0, 0]
+  - id: 22675
+    name: "Kosmos 2251 (v=-0.5 km/s)"
+    satType: SPACECRAFT
+    mass: 900.0
+    radius: 1.1
+    position: [6800100, 0, 0]
+    velocity: [-500, 0, 0]

@@ -1,0 +1,19 @@
+---
+# CONFIGURATION: Negative Relative Velocity (+7.5 km/s head-on)
+# Satellites approach from OPPOSITE directions = head-on collision
+# Relative velocity: 7.5 + 7.5 = 15 km/s (EXTREMELY DESTRUCTIVE)
+# Input: Manual position/velocity (symmetric approach)
+# Expected: MAXIMUM fragmentation
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/data_analysis_velocity_low.yaml"]  # Use the custom satellite configuration with negative relative velocity
+
+inputOutput:
+  target: ["analysis_velocity_low_input.csv", "analysis_velocity_low_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["analysis_velocity_low_result.csv", "analysis_velocity_low_result.vtu"]
+  kepler: False

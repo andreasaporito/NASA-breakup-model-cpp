@@ -1,0 +1,21 @@
+---
+# TEST: EXTREME RADIUS scenario
+# Both satellites are extremely large (extended geometry)
+# Iridium 33:    radius ≈ 1.0 m  →  4.0 m (↑400% - very extended)
+# Kosmos 2251:   radius ≈ 1.1 m  →  5.0 m (↑354% - very extended)
+# Extreme cross-sectional area - massive impact = most fragments
+satellites:
+  - id: 24946
+    name: "Iridium 33 (EXTREME radius - very large, 4.0 m)"
+    satType: SPACECRAFT
+    mass: 556.0                    # kg - baseline
+    radius: 4.0                    # m (EXTREME: very extended, +300% from ~1 m)
+    position: [6800000, 0, 0]      # m
+    velocity: [0, 7500, 0]         # m/s
+  - id: 22675
+    name: "Kosmos 2251 (EXTREME radius - very large, 5.0 m)"
+    satType: SPACECRAFT
+    mass: 900.0                    # kg - baseline
+    radius: 5.0                    # m (EXTREME: very extended, +354% from ~1.1 m)
+    position: [6800100, 0, 0]      # m
+    velocity: [0, -7500, 0]        # m/s - opposite direction (head-on collision)

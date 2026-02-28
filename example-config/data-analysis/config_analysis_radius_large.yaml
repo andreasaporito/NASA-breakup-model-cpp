@@ -1,0 +1,20 @@
+---
+# CONFIGURATION: LARGE RADIUS scenario (extended geometry)
+# Iridium 33:   radius 1.0 m → 2.5 m (+150%, extended with solar panels)
+# Kosmos 2251:  radius 1.1 m → 3.0 m (+173%, extended with solar panels)
+# Large impact area = high energy density = MORE fragments
+# Collision velocity: 15 km/s head-on (manual position/velocity)
+# Input: Extended satellite geometry test (e.g., with deployed panels)
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/data_analysis_radius_large.yaml"]  # Use the custom satellite configuration with large radius
+
+inputOutput:
+  target: ["analysis_radius_large_input.csv", "analysis_radius_large_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["analysis_radius_large_result.csv", "analysis_radius_large_result.vtu"]
+  kepler: False

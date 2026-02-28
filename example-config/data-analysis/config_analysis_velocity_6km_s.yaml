@@ -1,0 +1,13 @@
+---
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/data_analysis_velocity_6km_s.yaml"]
+
+inputOutput:
+  target: ["analysis_velocity_6km_s_input.csv", "analysis_velocity_6km_s_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["analysis_velocity_6km_s_result.csv", "analysis_velocity_6km_s_result.vtu"]
+  kepler: False

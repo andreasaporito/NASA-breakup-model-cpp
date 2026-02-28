@@ -1,0 +1,21 @@
+---
+# CONFIGURATION: Minimum Characteristic Length = 0.001 m (ULTRA-FINE - 1 mm)
+# Detects microscopic dust particles and smallest debris
+# Extreme resolution - may generate 100,000+ fragments (computational limit)
+# Input: Baseline collision scenario (TLE-based, 7.6 km/s relative velocity)
+# Output: Ultra-high-resolution debris catalog
+
+simulation:
+  minimalCharacteristicLength: 0.001      # Ultra-fine threshold (1 mm)
+  simulationType: COLLISION
+  inputSource: ["../example-config/satcat.csv", "../example-config/iridium_cosmos_tle.txt"]
+  idFilter: [24946, 22675]                # Iridium 33 & Kosmos 2251
+
+inputOutput:
+  target: ["analysis_minlen_0.001_input.csv", "analysis_minlen_0.001_input.vtu"]
+  kepler: True
+
+resultOutput:
+  target: ["analysis_minlen_0.001_result.csv", "analysis_minlen_0.001_result.vtu"]
+  kepler: True
+

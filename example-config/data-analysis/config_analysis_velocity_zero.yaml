@@ -1,0 +1,19 @@
+---
+# CONFIGURATION: Zero Relative Velocity (coasting, no collision)
+# Both satellites moving at identical velocity - NO collision occurs
+# Input: Manual position/velocity (not TLE-based)
+# Use: Baseline/reference for velocity impact comparison
+# Expected: ZERO or minimal fragmentation
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/data_analysis_velocity_zero.yaml"]  # Use the custom satellite configuration with zero relative velocity
+
+inputOutput:
+  target: ["analysis_velocity_zero_input.csv", "analysis_velocity_zero_input.vtu"]
+  kepler: False                           # Using manual position/velocity, not TLE
+
+resultOutput:
+  target: ["analysis_velocity_zero_result.csv", "analysis_velocity_zero_result.vtu"]
+  kepler: False

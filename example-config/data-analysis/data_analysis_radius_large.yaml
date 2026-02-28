@@ -1,0 +1,21 @@
+---
+# TEST: LARGE RADIUS scenario
+# Extended satellites with large cross-sectional area
+# Iridium 33:    radius ≈ 1.0 m  →  2.5 m (↑ extended)
+# Kosmos 2251:   radius ≈ 1.1 m  →  3.0 m (↑ extended)
+# Larger impact area = high energy transfer = more fragments
+satellites:
+  - id: 24946
+    name: "Iridium 33 (LARGE radius - 2.5 m)"
+    satType: SPACECRAFT
+    mass: 556.0                    # kg - baseline
+    radius: 2.5                    # m (INCREASED - extended geometry, e.g., with solar panels)
+    position: [6800000, 0, 0]      # m
+    velocity: [0, 7500, 0]         # m/s
+  - id: 22675
+    name: "Kosmos 2251 (LARGE radius - 3.0 m)"
+    satType: SPACECRAFT
+    mass: 900.0                    # kg - baseline
+    radius: 3.0                    # m (INCREASED - extended geometry, e.g., with solar panels)
+    position: [6800100, 0, 0]      # m
+    velocity: [0, -7500, 0]        # m/s - opposite direction (head-on collision)

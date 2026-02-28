@@ -1,0 +1,21 @@
+---
+# CONFIGURATION: Minimum Characteristic Length = 0.03 m (FINE - 3 cm)
+# Detects small to medium debris pieces
+# Practical resolution - typically 2,000-4,000 fragments (operational tracking)
+# Input: Baseline collision scenario (TLE-based, 7.6 km/s relative velocity)
+# Output: Operationally relevant debris catalog
+
+simulation:
+  minimalCharacteristicLength: 0.03       # Fine threshold (3 cm)
+  simulationType: COLLISION
+  inputSource: ["../example-config/satcat.csv", "../example-config/iridium_cosmos_tle.txt"]
+  idFilter: [24946, 22675]                # Iridium 33 & Kosmos 2251
+
+inputOutput:
+  target: ["analysis_minlen_0.03_input.csv", "analysis_minlen_0.03_input.vtu"]
+  kepler: True
+
+resultOutput:
+  target: ["analysis_minlen_0.03_result.csv", "analysis_minlen_0.03_result.vtu"]
+  kepler: True
+

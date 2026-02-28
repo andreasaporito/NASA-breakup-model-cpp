@@ -1,0 +1,21 @@
+---
+# TEST: SMALL RADIUS scenario
+# Compact satellites with small cross-sectional area
+# Iridium 33:    radius ≈ 1.0 m  →  0.5 m (↓ compact)
+# Kosmos 2251:   radius ≈ 1.1 m  →  0.6 m (↓ compact)
+# Smaller impact area = lower energy transfer = fewer fragments
+satellites:
+  - id: 24946
+    name: "Iridium 33 (SMALL radius - 0.5 m)"
+    satType: SPACECRAFT
+    mass: 556.0                    # kg - baseline
+    radius: 0.5                    # m (REDUCED - compact geometry)
+    position: [6800000, 0, 0]      # m
+    velocity: [0, 7500, 0]         # m/s
+  - id: 22675
+    name: "Kosmos 2251 (SMALL radius - 0.6 m)"
+    satType: SPACECRAFT
+    mass: 900.0                    # kg - baseline
+    radius: 0.6                    # m (REDUCED - compact geometry)
+    position: [6800100, 0, 0]      # m
+    velocity: [0, -7500, 0]        # m/s - opposite direction (head-on collision)

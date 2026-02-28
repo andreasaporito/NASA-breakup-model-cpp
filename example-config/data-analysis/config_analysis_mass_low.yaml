@@ -1,0 +1,20 @@
+---
+# CONFIGURATION: LOW MASS scenario
+# Iridium 33:   556 kg → 300 kg (-46%)
+# Kosmos 2251:  900 kg → 500 kg (-44%)
+# Both lighter satellites - FEWER total fragments expected
+# Collision velocity: 15 km/s head-on (manual position/velocity)
+# Input: Custom satellites with reduced mass
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/data_analysis_mass_low.yaml"]  # Use the custom satellite configuration with low mass
+
+inputOutput:
+  target: ["analysis_mass_low_input.csv", "analysis_mass_low_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["analysis_mass_low_result.csv", "analysis_mass_low_result.vtu"]
+  kepler: False

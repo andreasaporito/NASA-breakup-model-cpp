@@ -1,0 +1,21 @@
+---
+# CONFIGURATION: EXTREME RADIUS ASYMMETRY scenario
+# Iridium 33:   radius 1.0 m → 0.3 m (-70%, TINY compact)
+# Kosmos 2251:  radius 1.1 m → 4.0 m (+263%, HUGE extended)
+# Extreme 13:1 radius ratio - tests maximum geometric asymmetry
+# Collision velocity: 15 km/s head-on (manual position/velocity)
+# Input: Extreme asymmetric geometry test
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/data_analysis_radius_extreme.yaml"]  # Use the custom satellite configuration with extreme radius asymmetry
+
+
+inputOutput:
+  target: ["analysis_radius_extreme_input.csv", "analysis_radius_extreme_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["analysis_radius_extreme_result.csv", "analysis_radius_extreme_result.vtu"]
+  kepler: False

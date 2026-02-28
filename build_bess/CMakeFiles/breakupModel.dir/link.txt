@@ -1,1 +1,0 @@
-/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/breakupModel.dir/src/main.cpp.o -o breakupModel  libbreakupModel_lib.a _deps/yaml-cpp-build/libyaml-cpp.a _deps/spdlog-build/libspdlog.a -ltbb 

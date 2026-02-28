@@ -1,0 +1,21 @@
+---
+# CONFIGURATION: Minimum Characteristic Length = 2.0 m (EXTREME - 2 meters)
+# Only tracks collision cores and system fragments (building-sized pieces)
+# Minimal tracking - typically 5-20 remnant pieces
+# Input: Baseline collision scenario (TLE-based, 7.6 km/s relative velocity)
+# Output: Only major collision remnants
+
+simulation:
+  minimalCharacteristicLength: 2.0        # Extreme threshold (2 m)
+  simulationType: COLLISION
+  inputSource: ["../example-config/satcat.csv", "../example-config/iridium_cosmos_tle.txt"]
+  idFilter: [24946, 22675]                # Iridium 33 & Kosmos 2251
+
+inputOutput:
+  target: ["analysis_minlen_2.0_input.csv", "analysis_minlen_2.0_input.vtu"]
+  kepler: True
+
+resultOutput:
+  target: ["analysis_minlen_2.0_result.csv", "analysis_minlen_2.0_result.vtu"]
+  kepler: True
+

@@ -1,0 +1,21 @@
+---
+# TEST: EXTREME MASS scenario
+# Both satellites are extremely massive
+# Iridium 33:    556 kg  →  1200 kg (↑ 115%) - VERY HEAVY
+# Kosmos 2251:   900 kg  →  1500 kg (↑ 67%) - VERY HEAVY
+# Both heavy satellites - maximum total kinetic energy, most fragments
+satellites:
+  - id: 24946
+    name: "Iridium 33 (EXTREME mass - 1200 kg)"
+    satType: SPACECRAFT
+    mass: 1200.0                   # kg (EXTREME: very heavy, +115% from 556)
+    radius: 1.0                    # m
+    position: [6800000, 0, 0]      # m
+    velocity: [0, 7500, 0]         # m/s - baseline orbital velocity
+  - id: 22675
+    name: "Kosmos 2251 (EXTREME mass - 1500 kg)"
+    satType: SPACECRAFT
+    mass: 1500.0                   # kg (EXTREME: very heavy, +67% from 900)
+    radius: 1.1                    # m
+    position: [6800100, 0, 0]      # m
+    velocity: [0, -7500, 0]        # m/s - opposite direction (head-on collision)

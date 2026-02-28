@@ -1,0 +1,20 @@
+---
+# TEST: Zero Relative Velocity
+# Both satellites have IDENTICAL velocity vectors
+# No relative motion - not a collision (for comparison)
+# Manual position/velocity override (not using TLE)
+satellites:
+  - id: 24946
+    name: "Iridium 33 (v=7.5 km/s)"
+    satType: SPACECRAFT
+    mass: 556.0                    # kg - same as baseline
+    radius: 1.0                    # m
+    position: [6800000, 0, 0]      # m - LEO altitude
+    velocity: [7500, 0, 0]         # m/s - circular orbit velocity
+  - id: 22675
+    name: "Kosmos 2251 (v=7.5 km/s - SAME velocity!)"
+    satType: SPACECRAFT
+    mass: 900.0                    # kg - same as baseline
+    radius: 1.1                    # m
+    position: [6800100, 0, 0]      # m - slightly offset position
+    velocity: [7500, 0, 0]         # m/s - IDENTICAL velocity (zero relative velocity)

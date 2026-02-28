@@ -1,0 +1,19 @@
+---
+# TEST: Negative/Head-on Relative Velocity
+# Satellites approach from opposite directions
+# High destructive potential (near-head-on collision)
+satellites:
+  - id: 24946
+    name: "Iridium 33 (v=+7.5 km/s)"
+    satType: SPACECRAFT
+    mass: 556.0                    # kg - same as baseline
+    radius: 1.0                    # m
+    position: [6800000, 0, 0]      # m
+    velocity: [7500, 0, 0]         # m/s - moving in +Y direction
+  - id: 22675
+    name: "Kosmos 2251 (v=-7.5 km/s - opposite!)"
+    satType: SPACECRAFT
+    mass: 900.0                    # kg - same as baseline
+    radius: 1.1                    # m
+    position: [6800100, 0, 0]      # m
+    velocity: [7000, 0, 0]        # m/s - moving in -Y direction (OPPOSITE!)

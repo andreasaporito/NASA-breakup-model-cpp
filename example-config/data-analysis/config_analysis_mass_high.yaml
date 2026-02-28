@@ -1,0 +1,21 @@
+---
+# CONFIGURATION: HIGH MASS scenario
+# Iridium 33:   556 kg → 800 kg (+44%)
+# Kosmos 2251:  900 kg → 1200 kg (+33%)
+# Both heavier satellites - MORE total fragments expected
+# Collision velocity: 15 km/s head-on (manual position/velocity)
+# Input: Custom satellites with increased mass
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/data_analysis_mass_high.yaml"]  # Use the custom satellite configuration with high mass
+
+
+inputOutput:
+  target: ["analysis_mass_high_input.csv", "analysis_mass_high_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["analysis_mass_high_result.csv", "analysis_mass_high_result.vtu"]
+  kepler: False

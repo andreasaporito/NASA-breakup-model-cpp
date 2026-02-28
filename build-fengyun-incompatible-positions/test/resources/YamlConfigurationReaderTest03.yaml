@@ -1,4 +1,0 @@
----
-simulation:
-  minimalCharacteristicLength: 0.10
-  inputSource: ["/data.yaml"]

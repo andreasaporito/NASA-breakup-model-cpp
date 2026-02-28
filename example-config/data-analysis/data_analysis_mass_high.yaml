@@ -1,0 +1,20 @@
+---
+# TEST: HIGH MASS scenario
+# Iridium 33:    556 kg  →  800 kg (↑ 44%)
+# Kosmos 2251:   900 kg  →  1200 kg (↑ 33%)
+# Both satellites are heavier - more fragments expected
+satellites:
+  - id: 24946
+    name: "Iridium 33 (HIGH mass - 800 kg)"
+    satType: SPACECRAFT
+    mass: 800.0                    # kg (INCREASED from 556)
+    radius: 1.0                    # m
+    position: [6800000, 0, 0]      # m
+    velocity: [0, 7500, 0]         # m/s - baseline orbital velocity
+  - id: 22675
+    name: "Kosmos 2251 (HIGH mass - 1200 kg)"
+    satType: SPACECRAFT
+    mass: 1200.0                   # kg (INCREASED from 900)
+    radius: 1.1                    # m
+    position: [6800010, 0, 0]      # m
+    velocity: [0, -7500, 0]        # m/s - baseline collision velocity

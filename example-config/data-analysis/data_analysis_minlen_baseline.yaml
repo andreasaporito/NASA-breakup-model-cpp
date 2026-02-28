@@ -1,0 +1,18 @@
+---
+# TEST: BASELINE - Minimum Characteristic Length = 0.05 m
+# Standard Iridium 33 vs Kosmos 2251 collision using TLE data
+# Collision velocity: ~7.6 km/s (from orbital mechanics)
+# This is the reference scenario for all minimum characteristic length tests
+satellites:
+  - name: "Iridium 33 (baseline)"
+    id: 24946
+    satType: SPACECRAFT
+    mass: 556.0                    # kg (actual mass)
+    radius: 1.0                    # m (spherical approximation)
+    kepler: "../example-config/iridium_cosmos_tle.txt"
+  - name: "Kosmos 2251 (baseline)"
+    id: 22675
+    satType: SPACECRAFT
+    mass: 900.0                    # kg (actual mass)
+    radius: 1.1                    # m (spherical approximation)
+    kepler: "../example-config/iridium_cosmos_tle.txt"

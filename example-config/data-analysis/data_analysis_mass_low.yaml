@@ -1,0 +1,20 @@
+---
+# TEST: LOW MASS scenario
+# Iridium 33:    556 kg  →  300 kg (↓ 46%)
+# Kosmos 2251:   900 kg  →  500 kg (↓ 44%)
+# Both satellites are lighter - fewer fragments expected
+satellites:
+  - id: 24946
+    name: "Iridium 33 (LOW mass - 300 kg)"
+    satType: SPACECRAFT
+    mass: 300.0                    # kg (REDUCED from 556)
+    radius: 1.0                    # m
+    position: [6800000, 0, 0]      # m
+    velocity: [0, 7500, 0]         # m/s - baseline orbital velocity
+  - id: 22675
+    name: "Kosmos 2251 (LOW mass - 500 kg)"
+    satType: SPACECRAFT
+    mass: 500.0                    # kg (REDUCED from 900)
+    radius: 1.1                    # m
+    position: [6800010, 0, 0]      # m
+    velocity: [0, -7500, 0]        # m/s - baseline collision velocity

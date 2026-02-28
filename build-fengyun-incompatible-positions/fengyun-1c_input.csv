@@ -1,3 +1,0 @@
-ID,Name,Satellite Type,Characteristic Length [m],A/M [m^2/kg],Area [m^2],Mass [kg],Ejection Velocity [m/s],Velocity [m/s],Position [m]
-25730,Fengyun 1C,SPACECRAFT,3.600189810799044,0.011567992705350787,10.179833580708692,880,[0 0 0],[0 0 0],[0 0 0]
-1,Kincetic Kill Vehicle,SPACECRAFT,2.8034413490120316,0.012345333491798123,6.172666745899061,500,[0 0 0],[9360 0 0],[40 20 100]

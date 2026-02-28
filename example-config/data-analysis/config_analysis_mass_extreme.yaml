@@ -1,0 +1,20 @@
+---
+# CONFIGURATION: EXTREME MASS RATIO scenario
+# Iridium 33:   556 kg → 200 kg (-64%, VERY LIGHT)
+# Kosmos 2251:  900 kg → 1500 kg (+67%, VERY HEAVY)
+# Asymmetric collision: 1:7.5 mass ratio
+# Collision velocity: 15 km/s head-on (manual position/velocity)
+# Input: Extreme mass asymmetry test case
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/data_analysis_mass_extreme.yaml"]  # Use the custom satellite configuration with extreme mass ratio
+
+inputOutput:
+  target: ["analysis_mass_extreme_input.csv", "analysis_mass_extreme_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["analysis_mass_extreme_result.csv", "analysis_mass_extreme_result.vtu"]
+  kepler: False
