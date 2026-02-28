@@ -1,4 +1,4 @@
 .idea
 cmake-build-*
-build_iridium_cosmos
-input-output
+build_iridium_cosmos/
+results_analysis/data_analysis/input-output/
