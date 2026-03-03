@@ -1,0 +1,15 @@
+satellites:
+  - id: 24946
+    name: "Satellite 1"
+    satType: SPACECRAFT
+    mass: 1000.0                    # kg
+    radius: 1.0                    # m
+    position: [6800000, 0, 0]      # m+
+    velocity: [0, 0, 0]         # m/s - circular orbit velocity
+  - id: 22675
+    name: "Satellite 2"
+    satType: SPACECRAFT
+    mass: 500.0                    # kg
+    radius: 1.1                    # m
+    position: [6800100, 0, 0]      # m - slightly offset position
+    velocity: [-5000, 0, 0]         # m/s - IDENTICAL velocity (zero relative velocity)

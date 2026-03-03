@@ -1,0 +1,15 @@
+satellites:
+  - id: 24946
+    name: "Target"
+    satType: SPACECRAFT
+    mass: 1000.0                    # kg
+    radius: 1.0                    # m
+    position: [6800100, 0, 0]      # m - LEO altitude
+    velocity: [0, 0, 0]         # m/s - circular orbit velocity
+  - id: 22675
+    name: "Projectile"
+    satType: SPACECRAFT
+    mass: 10                   # kg - same as baseline
+    radius: 1.1                    # m
+    position: [6800000, 0, 0]      # m - slightly offset position
+    velocity: [5000, 0, 0]         # m/s - IDENTICAL velocity (zero relative velocity)

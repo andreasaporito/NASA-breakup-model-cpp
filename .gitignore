@@ -2,3 +2,10 @@
 cmake-build-*
 build_iridium_cosmos/
 results_analysis/data_analysis/input-output/
+collision_config.yaml
+collision_data.yaml
+fragments.csv
+fragments.vtu
+input.csv
+input.vtu
+results_analysis/catastrophic_vs_noncatastrophic/output/

@@ -1,0 +1,13 @@
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/catastrophic-vs-noncatastrophic/data_non_cat.yaml"]  # Use the custom satellite configuration with high relative velocity
+
+inputOutput:
+  target: ["../results_analysis/catastrophic_vs_noncatastrophic/input/non_cat_input.csv", "../results_analysis/catastrophic_vs_noncatastrophic/input/non_cat_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["../results_analysis/catastrophic_vs_noncatastrophic/output/non_cat_result.csv", "../results_analysis/catastrophic_vs_noncatastrophic/output/non_cat_result.vtu"]
+  kepler: False
