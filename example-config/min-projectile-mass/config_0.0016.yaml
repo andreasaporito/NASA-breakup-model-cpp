@@ -1,0 +1,14 @@
+
+simulation:
+  minimalCharacteristicLength: 0.01
+  simulationType: COLLISION
+  enforceMassConservation: True
+  inputSource: ["../example-config/min-projectile-mass/data_0.0016.yaml"]  # Use the custom satellite configuration with high relative velocity
+
+inputOutput:
+  target: ["../results_analysis/min-projectile-mass/input/0.0016_input.csv", "../results_analysis/min-projectile-mass/input/0.0016_input.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["../results_analysis/min-projectile-mass/output/0.0016_result.csv", "../results_analysis/min-projectile-mass/output/0.0016_result.vtu"]
+  kepler: False

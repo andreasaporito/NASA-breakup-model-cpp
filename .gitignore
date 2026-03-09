@@ -9,3 +9,8 @@ fragments.vtu
 input.csv
 input.vtu
 results_analysis/catastrophic_vs_noncatastrophic/output/
+results_analysis/min-projectile-mass/output/
+
+results_analysis/min-projectile-mass/input/
+results_analysis/min-projectile-size/output/
+results_analysis/min-projectile-size/input/

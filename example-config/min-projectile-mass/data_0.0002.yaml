@@ -1,0 +1,15 @@
+satellites:
+  - id: 24946
+    name: "Target"
+    satType: SPACECRAFT
+    mass: 1000.0                    # kg
+    radius: 2.0
+    position: [6800100, 0, 0]
+    velocity: [0, 0, 0]
+  - id: 22675
+    name: "Projectile"
+    satType: SPACECRAFT
+    mass: 2                   # kg - same as baseline
+    radius: 0.1                    # m
+    position: [6800000, 0, 0]      # m - slightly offset position
+    velocity: [5000, 0, 0]         
