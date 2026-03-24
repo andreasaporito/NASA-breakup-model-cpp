@@ -65,8 +65,9 @@ SatelliteBuilder &SatelliteBuilder::setMass(double mass) {
 
 SatelliteBuilder &SatelliteBuilder::setMassByArea(double area) {
     double characteristicLength = util::calculateCharacteristicLength(area);
-    double mass = util::calculateSphereMass(characteristicLength);
-    _satellite.setMass(mass);
+    //double mass = util::calculateSphereMass(characteristicLength);
+    //_satellite.setMass(mass);
+    double mass = _satellite.getMass();
     _satellite.setArea(area);
     _satellite.setAreaToMassRatio(area / mass);
     _satellite.setCharacteristicLength(characteristicLength);

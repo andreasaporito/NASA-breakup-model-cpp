@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<VTKFile byte_order="LittleEndian" type="UnstructuredGrid" version="0.1">
+  <UnstructuredGrid>
+    <Piece NumberOfCells="0" NumberOfPoints="3">
+      <PointData>
+        <DataArray Name="characteristic-length" NumberOfComponents="1" format="ascii" type="Float32">
+          2.236241980732863
+          0.07109871131692953
+          0.05801803623982993
+        </DataArray>
+        <DataArray Name="mass" NumberOfComponents="1" format="ascii" type="Float32">
+          299.98514615622713
+          0.02449800692669945
+          0.031173798567560636
+        </DataArray>
+        <DataArray Name="area" NumberOfComponents="1" format="ascii" type="Float32">
+          2.795730673693451
+          0.002780549795558846
+          0.0018497693752522147
+        </DataArray>
+        <DataArray Name="area-to-mass" NumberOfComponents="1" format="ascii" type="Float32">
+          0.05492697858615808
+          0.11350106169365273
+          0.05933731082669788
+        </DataArray>
+        <DataArray Name="velocity" NumberOfComponents="3" format="ascii" type="Float32">
+          -295.06802255750586 1.6675665003967128 6.274091926349389
+          717.8024768430674 110.81738260137338 53.96194555567797
+          453.0375386078132 -4.250150465784069 129.26604325957948
+        </DataArray>
+        <DataArray Name="ejection-velocity" NumberOfComponents="3" format="ascii" type="Float32">
+          4.935958690844818 1.6675665003967128 6.274091926349389
+          219.40887247449663 110.81738260137338 53.96194555567797
+          -45.35606576075762 -4.250150465784069 129.26604325957948
+        </DataArray>
+      </PointData>
+      <CellData/>
+      <Points>
+        <DataArray Name="position" NumberOfComponents="3" format="ascii" type="Float32">
+          5000125084.121759 0 0
+          5000125084.121759 0 0
+          5000125084.121759 0 0
+        </DataArray>
+      </Points>
+      <Cells>
+        <DataArray Name="types" NumberOfComponents="0" format="ascii" type="Float32"/>
+      </Cells>
+    </Piece>
+  </UnstructuredGrid>
+</VTKFile>

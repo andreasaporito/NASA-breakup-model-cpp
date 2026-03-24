@@ -1,0 +1,14 @@
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  enforceMassConservation: True
+  inputSource: ["../example-config/validation-cascade/data-validation.yaml"]  # Use the custom satellite configuration with high relative velocity
+
+inputOutput:
+  target: ["../results_analysis/validation-cascade/input/input.csv", "../results_analysis/validation-cascade/input/input.vtu"]
+  kepler: True
+
+resultOutput:
+  target: ["../results_analysis/validation-cascade/output/result.csv", "../results_analysis/validation-cascade/output/result.vtu"]
+  kepler: True

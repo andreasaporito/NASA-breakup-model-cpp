@@ -1,0 +1,15 @@
+satellites:
+  - id: 1002
+    name: "OBJECT-1"
+    satType: SPACECRAFT
+    mass: 300.0                    # kg
+    radius: 2.236
+    position: [5000125084.121759, 0, 0]
+    velocity: [-300.00398124835067, 0, 0]
+  - id: 50559
+    name: "OBJECT-2"
+    satType: SPACECRAFT
+    mass: 0.18699783868091482                   # kg - same as baseline
+    radius: 0.08536124859841773                    # m
+    position: [5000124988.605206, -5.9686714565195285, 28.99936231863228]      # m - slightly offset position
+    velocity: [498.39360436857083, 0, 0]         

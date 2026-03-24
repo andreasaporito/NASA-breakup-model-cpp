@@ -1,0 +1,12 @@
+simulation:
+  minimalCharacteristicLength: 0.00027
+  simulationType: COLLISION
+  inputSource: [/home/andrea/LSMS_project/NASA-breakup-model-cpp/AkantuComparison/0-angle-39-Jg/configs/data.yaml]
+inputOutput:
+  target: [/home/andrea/LSMS_project/NASA-breakup-model-cpp/AkantuComparison/0-angle-39-Jg/input-output/input.csv,
+    /home/andrea/LSMS_project/NASA-breakup-model-cpp/AkantuComparison/0-angle-39-Jg/input-output/input.vtu]
+  kepler: false
+resultOutput:
+  target: [/home/andrea/LSMS_project/NASA-breakup-model-cpp/AkantuComparison/0-angle-39-Jg/input-output/result.csv,
+    /home/andrea/LSMS_project/NASA-breakup-model-cpp/AkantuComparison/0-angle-39-Jg/input-output/result.vtu]
+  kepler: false

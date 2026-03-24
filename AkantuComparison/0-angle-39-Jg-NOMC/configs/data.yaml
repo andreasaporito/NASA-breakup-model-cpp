@@ -1,0 +1,15 @@
+satellites:
+- id: 1
+  name: Target
+  satType: SPACECRAFT
+  mass: 0.39
+  area: 0.01
+  position: [100000, 0, 0]
+  velocity: [0, 0, 0]
+- id: 2
+  name: Projectile
+  satType: SPACECRAFT
+  mass: 0.02
+  area: 0.0002
+  position: [100000, 0, 0]
+  velocity: [1233.29, 0, 0]

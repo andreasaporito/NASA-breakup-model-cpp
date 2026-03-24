@@ -5,6 +5,8 @@ void VTKWriter::printResult(const std::vector<Satellite> &satelliteCollection) c
     this->printHeader(satelliteCollection.size());
 
     //Point properties
+    this->printProperty<unsigned long, Satellite>("id", &Satellite::getId, satelliteCollection);
+    this->printProperty<std::string, Satellite>("name", &Satellite::getName, satelliteCollection);
     this->printProperty<double, Satellite>("characteristic-length", &Satellite::getCharacteristicLength, satelliteCollection);
     this->printProperty<double, Satellite>("mass", &Satellite::getMass, satelliteCollection);
     this->printProperty<double, Satellite>("area", &Satellite::getArea, satelliteCollection);
