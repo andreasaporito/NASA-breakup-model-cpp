@@ -17,7 +17,7 @@ private:
 
     void calculateFragmentCount() final;
 
-    void assignParentProperties() final;
+    void assignParentProperties(SubCollision &sub) override;
 
 };
 

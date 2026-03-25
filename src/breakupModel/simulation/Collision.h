@@ -20,10 +20,11 @@ private:
 
     void calculateFragmentCount() final;
 
-    void assignParentProperties() final;
+    double _MassRatio;
 
-protected:
-    void addFurtherFragments() override;
+    double _maxCharacteristicLength1;
+
+    double _maxCharacteristicLength2;
 
 public:
 

@@ -82,3 +82,16 @@ std::tuple<double &, double &, double &, double &> Satellites::prependElement() 
             {characteristicLength.front(), areaToMassRatio.front(), area.front(), mass.front()};
 }
 
+void Satellites::copyFrom(const Satellites& other, size_t offset) {
+    size_t count = other.size();
+    if (count == 0) return;
+
+    // Use std::copy to move the SoA data into the correct slice of the main vectors
+    std::copy(other.characteristicLength.begin(), other.characteristicLength.end(), this->characteristicLength.begin() + offset);
+    std::copy(other.mass.begin(), other.mass.end(), this->mass.begin() + offset);
+    std::copy(other.area.begin(), other.area.end(), this->area.begin() + offset);
+    std::copy(other.areaToMassRatio.begin(), other.areaToMassRatio.end(), this->areaToMassRatio.begin() + offset);
+    std::copy(other.velocity.begin(), other.velocity.end(), this->velocity.begin() + offset);
+    std::copy(other.ejectionVelocity.begin(), other.ejectionVelocity.end(), this->ejectionVelocity.begin() + offset);
+    std::copy(other.name.begin(), other.name.end(), this->name.begin() + offset);
+}

@@ -18,6 +18,7 @@
 class Satellites {
 
 public:
+    void copyFrom(const Satellites& other, size_t offset);
 
     /*
      * Shared Properties

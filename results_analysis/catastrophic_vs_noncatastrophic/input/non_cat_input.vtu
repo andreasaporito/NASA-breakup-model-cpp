@@ -3,6 +3,10 @@
   <UnstructuredGrid>
     <Piece NumberOfCells="0" NumberOfPoints="2">
       <PointData>
+        <DataArray Name="id" NumberOfComponents="1" format="ascii" type="Float32">
+          24946
+          22675
+        </DataArray>
         <DataArray Name="characteristic-length" NumberOfComponents="1" format="ascii" type="Float32">
           3.809698331863496
           0.4965178149921299

@@ -7,23 +7,25 @@ void Breakup::run() {
     //1. Step: Generate the new Satellites
     this->calculateFragmentCount();
 
-    //2. Step: Assign every new Satellite a value for L_c
-    this->characteristicLengthDistribution();
+    for (auto & subBatch : _subOutputs) {
 
-    //3. Step: Calculate the A/M (area-to-mass-ratio), A (area) and M (mass) values for every Satellite
-    this->areaToMassRatioDistribution();
+        //2. Step: Assign every new Satellite a value for L_c
+        this->characteristicLengthDistribution(subBatch.fragments);
+        
+        //3. Step: Calculate the A/M (area-to-mass-ratio), A (area) and M (mass) values for every Satellite
+        this->areaToMassRatioDistribution(subBatch.fragments);
+        //4. Step: Enforce the Mass Conservation and remove (or add) fragments
+        this->enforceMassConservation(subBatch);
 
-    //4. Step: Enforce the Mass Conservation and remove (or add) fragments
-    this->enforceMassConservation();
+        //5. Step: Assign parent and by doing that assign each fragment a base velocity
+        this->assignParentProperties(subBatch);
 
-    //5. Step: Assign parent and by doing that assign each fragment a base velocity
-    this->assignParentProperties();
+        //6. Step: Calculate the Ejection velocity for every Satellite
+        this->deltaVelocityDistribution(subBatch.fragments);
+    }
 
-    //6. Step: Calculate the Ejection velocity for every Satellite
-    this->deltaVelocityDistribution();
-
-    //7. Step: As a last step set the _currentMaxGivenID to the new valid value
-    _currentMaxGivenID += _output.size();
+    // 7. Merge outputs
+    this->mergeSubOutputs();
 }
 
 Breakup &Breakup::setSeed(std::optional<unsigned long> seed) {
@@ -40,19 +42,30 @@ void Breakup::init() {
     _outputMass = 0;
 }
 
-void Breakup::generateFragments(size_t fragmentCount, const std::array<double, 3> &position) {
-    _output = Satellites{_currentMaxGivenID+1, SatType::DEBRIS, position, fragmentCount};
+void Breakup::generateFragments(size_t fragmentCount, double targetMass, const std::array<double,3> &parentVelocity, const std::string namePtr, const std::array<double, 3> &position) {
+    
+    SubCollision sub;
+    sub.fragments = Satellites{_currentMaxGivenID + 1, SatType::DEBRIS, position, fragmentCount};
+    sub.targetInputMass = targetMass;
+    sub.currentOutputMass = 0.0;
+    sub.parentNamePtr = std::make_shared<const std::string>(namePtr + "-Fragment");
+    sub.parentVelocity = parentVelocity;
+    
+    // Append a new Satellites batch to our temporary vector
+    _subOutputs.push_back(std::move(sub));
+    // Update the ID so the next sub-collision gets correct IDs
+    _currentMaxGivenID += fragmentCount;
 }
 
-void Breakup::characteristicLengthDistribution() {
-    std::for_each(std::execution::par_unseq, _output.characteristicLength.begin(), _output.characteristicLength.end(),
+void Breakup::characteristicLengthDistribution(Satellites &targetOutput) {
+    std::for_each(std::execution::par_unseq, targetOutput.characteristicLength.begin(), targetOutput.characteristicLength.end(),
                   [&](double &lc) {
         lc = calculateCharacteristicLength();
     });
 }
 
-void Breakup::areaToMassRatioDistribution() {
-    auto tupleView = _output.getAreaMassTuple();
+void Breakup::areaToMassRatioDistribution(Satellites &targetOutput) {
+    auto tupleView = targetOutput.getAreaMassTuple();
     std::for_each(std::execution::par_unseq, tupleView.begin(), tupleView.end(),
                   [&](auto &tuple) {
         //Order in the tuple: 0: L_c | 1: A/M | 2: Area | 3: Mass
@@ -66,39 +79,41 @@ void Breakup::areaToMassRatioDistribution() {
     });
 }
 
-void Breakup::enforceMassConservation() {
+void Breakup::enforceMassConservation(SubCollision& subBatch) {
     //Enforce Mass Conservation if the output mass is greater than the input mass
-    _outputMass = std::reduce(std::execution::par_unseq,_output.mass.begin(), _output.mass.end(), 0.0);
-    spdlog::debug("The simulation got {} kg of input mass for fragments", _inputMass);
-    spdlog::debug("The simulation produced {} kg of debris", _outputMass);
-    size_t oldSize = _output.size();
-    size_t newSize = _output.size();
+    subBatch.currentOutputMass = std::reduce(std::execution::par_unseq, 
+                                             subBatch.fragments.mass.begin(), 
+                                             subBatch.fragments.mass.end(), 0.0);
+    spdlog::debug("Batch target mass: {} kg", subBatch.targetInputMass);
+    spdlog::debug("Batch produced mass: {} kg", subBatch.currentOutputMass);
+    size_t oldSize = subBatch.fragments.size();
+    size_t newSize = subBatch.fragments.size();
     // Shrink and Remove Mass Excess
-    while (_outputMass > _inputMass) {
-        _outputMass -= _output.mass.back();
-        newSize -= 1;
-        _output.mass.pop_back();
+    if (subBatch.currentOutputMass > subBatch.targetInputMass) {
+        size_t newSize = oldSize;
+        while (newSize > 0 && subBatch.currentOutputMass > subBatch.targetInputMass) {
+            subBatch.currentOutputMass -= subBatch.fragments.mass[newSize - 1];
+            newSize--;
+        }
+        subBatch.fragments.resize(newSize);
     }
-    _output.resize(newSize);
 
-    // Add new Fragments to better fulfill the Mass Budget, if mass excess was not already removed
-    if (_enforceMassConservation && newSize == oldSize) {
-        this->addFurtherFragments();
-        newSize = _output.size();
+    if (_enforceMassConservation && subBatch.fragments.size() == oldSize) {
+        this->addFurtherFragments(subBatch);
     }
-    // Some helpful logging hints
-    if (oldSize != newSize) {
-        spdlog::warn("The simulation modified the number of fragments to enforce the mass conservation.");
-        spdlog::warn("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
-        spdlog::debug("The simulation corrected to {} kg of debris", _outputMass);
+
+    if (oldSize != subBatch.fragments.size()) {
+        spdlog::warn("Fragment count adapted from {} to {}.", oldSize, subBatch.fragments.size());
+        // FIX: Use local mass for debug
+        spdlog::debug("Corrected batch mass: {} kg", subBatch.currentOutputMass);
     }
 }
 
-void Breakup::addFurtherFragments() {
-    while (_outputMass < _inputMass) {
+void Breakup::addFurtherFragments(SubCollision& sub) {
+    while (sub.currentOutputMass < sub.targetInputMass) {
         //Order in the tuple: 0: L_c | 1: A/M | 2: Area | 3: Mass
         //Create new element and assign values
-        auto tuple = _output.appendElement();
+        auto tuple = sub.fragments.appendElement();
         auto &[lc, areaToMassRatio, area, mass] = tuple;
         lc = calculateCharacteristicLength();
         areaToMassRatio = calculateAreaMassRatio(lc);
@@ -106,16 +121,16 @@ void Breakup::addFurtherFragments() {
         mass = calculateMass(area, areaToMassRatio);
 
         //Calculate new mass
-        _outputMass += mass;
+        sub.currentOutputMass += mass;
     }
     //Remove the element which has lead to the exceeding of the mass budget
-    _outputMass -= _output.mass.back();
-    _output.popBack();
+    sub.currentOutputMass -= sub.fragments.mass.back();
+    sub.fragments.popBack();
 }
 
-void Breakup::deltaVelocityDistribution() {
+void Breakup::deltaVelocityDistribution(Satellites &targetOutput) {
     using namespace util;
-    auto tupleView = _output.getVelocityTuple();
+    auto tupleView = targetOutput.getVelocityTuple();
     std::for_each(std::execution::par_unseq, tupleView.begin(), tupleView.end(),
                   [&](auto &tuple) {
         //Order in the tuple: 0: A/M | 1: Velocity | 2: Ejection Velocity
@@ -196,4 +211,31 @@ std::array<double, 3> Breakup::calculateVelocityVector(double velocity) {
 
     return std::array<double, 3>
             {{v * std::cos(theta) * velocity, v * std::sin(theta) * velocity, u * velocity}};
+}
+
+
+void Breakup::assignParentProperties(SubCollision& sub) {
+    auto tupleView = sub.fragments.getVNTuple(); // Just velocity and name needed
+    std::for_each(std::execution::par_unseq, tupleView.begin(), tupleView.end(),
+                  [&](auto &tuple) {
+                      auto &[velocity, name] = tuple;
+                      velocity = sub.parentVelocity;
+                      name = sub.parentNamePtr;
+                  });
+}
+
+void Breakup::mergeSubOutputs() {
+    size_t totalFragments = 0;
+    for (const auto& sub : _subOutputs) totalFragments += sub.fragments.size();
+    
+    // Resize final _output once for performance
+    _output.resize(totalFragments); 
+
+    size_t offset = 0;
+    for (auto& sub : _subOutputs) {
+        // You'll need a method in your Satellites class to copy a range 
+        // into another Satellites object at a specific offset.
+        _output.copyFrom(sub.fragments, offset);
+        offset += sub.fragments.size();
+    }
 }
