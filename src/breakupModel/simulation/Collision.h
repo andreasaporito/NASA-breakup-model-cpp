@@ -8,23 +8,24 @@
  */
 class Collision : public Breakup {
 
+protected:
     bool _isCatastrophic;
 
 public:
 
     using Breakup::Breakup;
+    void run() override;
 
 private:
 
-    void init() final;
+    void init() override;
 
-    void calculateFragmentCount() final;
+    void calculateFragmentCount() override;
 
-    double _MassRatio;
+    void assignParentProperties() override;
 
-    double _maxCharacteristicLength1;
-
-    double _maxCharacteristicLength2;
+protected:
+    void addFurtherFragments() override;
 
 public:
 
@@ -34,3 +35,21 @@ public:
 
 };
 
+class SubCollision : public Collision {
+    int _cardinality;
+
+public: 
+    SubCollision(std::vector<Satellite> input,
+                 int cardinality,
+                 double minimalCharacteristicLength,
+                 size_t currentMaxGivenID,
+                 bool enforceMassConservation);
+    // Bypasses Collision::run() -> runs the standard Breakup pipeline only
+    void run() override;
+    int getCardinality() const { return _cardinality; }
+
+private:
+    void calculateFragmentCount() override;
+    void assignParentProperties() override;
+    void addFurtherFragments() override;
+};

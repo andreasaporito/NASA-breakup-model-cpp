@@ -24,14 +24,6 @@
  * which is either a collision or an explosion.
  */
 class Breakup {
-public:
-    struct SubCollision {
-        Satellites fragments;
-        double targetInputMass;
-        double currentOutputMass;
-        std::array<double, 3> parentVelocity;
-        std::shared_ptr<const std::string> parentNamePtr;
-    };
 
 protected:
 
@@ -120,11 +112,6 @@ protected:
      */
     Satellites _output;
 
-    /**
-     * For subCollision
-     */
-    std::vector<SubCollision> _subOutputs;
-
 
 public:
 
@@ -209,34 +196,42 @@ protected:
      * @param debrisName - the name for the fragments
      * @param position - position of the fragment, derived from the one parent (explosion) or from first parent (collision)
      */
-    virtual void generateFragments(size_t fragmentCount, double targetMass, const std::array<double, 3> &parentVelocity, const std::string namePtr, const std::array<double, 3> &position);
+    virtual void generateFragments(size_t fragmentCount, const std::array<double, 3> &position);
 
     /**
      * Creates the Size Distribution according to an specific powerLaw Exponent.
      * The Exponent comes from the probability density function (pdf) and depends on the subclass.
      * The subclasses therefore init _lcPowerLawExponent differently.
      */
-    void characteristicLengthDistribution(Satellites &targetOutput);
+    void characteristicLengthDistribution();
 
     /**
      * Creates for every satellite the area-to-mass ratio according to Equation 6.
      * This method also ensures that the output mass does not exceed the input mass.
      */
-    void areaToMassRatioDistribution(Satellites &targetOutput);
+    void areaToMassRatioDistribution();
 
     /**
      * This method enforces the Mass Conservation.
      * It removes fragments if outputMass > inputMass and
      * it generates more fragments if outputMass < inputMass && _enforceMassConservation is enabled
      */
-    void enforceMassConservation(SubCollision& subBatch);
+    void enforceMassConservation();
 
     /**
      * This generates fragments if outputMass > inputMass
      * This method is called by enforceMassConservation() and overriden in the Collision subclass since the
      * non-catastrophic collision has a special treatment due to the remaining cratered target satellite
      */
-    virtual void addFurtherFragments(SubCollision& sub);
+    virtual void addFurtherFragments();
+
+    /**
+     * This Method does assign each fragment a parent (trivial in Explosion case) and checks that
+     * the step before did not produce more mass than the input contained if so warning is printed
+     * Furthermore by assigning a parent, this method also assigns the base velocity of this fragment
+     * @note The _output of the breakup should be in a random order before this is called (this holds always true)
+     */
+    virtual void assignParentProperties() = 0;
 
     /**
      * Implements the Delta Velocity Distribution according to Equation 11/ 12.
@@ -245,7 +240,7 @@ protected:
      * depending on the subclass with different values, in _deltaVelocityFactorOffset
      * The subclasses therefore init _deltaVelocityFactorOffset differently.
      */
-    void deltaVelocityDistribution(Satellites &targetOutput);
+    void deltaVelocityDistribution();
 
     /**
      * This Method calculates one characteristic Length for one Debris Particle.
@@ -308,12 +303,6 @@ protected:
         }
     }
 
-    /**
-     * 
-     */
-    virtual void assignParentProperties(SubCollision& sub);
-    void mergeSubOutputs();
-
 public:
 
     [[nodiscard]] double getMinimalCharacteristicLength() const {
@@ -328,5 +317,4 @@ public:
         return _currentMaxGivenID;
     }
 };
-
 

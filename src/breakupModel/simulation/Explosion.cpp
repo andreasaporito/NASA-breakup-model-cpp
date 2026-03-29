@@ -25,21 +25,15 @@ void Explosion::calculateFragmentCount() {
 
     //The fragment Count, respectively Equation 2
     auto fragmentCount = static_cast<size_t>(6.0 * std::pow(_minimalCharacteristicLength, -1.6));
-        this->generateFragments(
-        fragmentCount, 
-        sat.getMass(),      // targetMass
-        sat.getVelocity(),  // parentVelocity
-        sat.getName(),      // namePtr (used for the "Fragment" suffix)
-        sat.getPosition()   // position
-    );
+    this->generateFragments(fragmentCount, sat.getPosition());
 }
 
-void Explosion::assignParentProperties(SubCollision &sub) {
+void Explosion::assignParentProperties() {
     //The name of the fragments
     const Satellite &parent = _input.at(0);
     auto debrisNamePtr = std::make_shared<const std::string>(parent.getName() + "-Explosion-Fragment");
 
-    auto tupleView = sub.fragments.getVNTuple();
+    auto tupleView = _output.getVNTuple();
     std::for_each(std::execution::par, tupleView.begin(), tupleView.end(),
                   [&](auto &tuple) {
         //Order in the tuple: 0: Velocity | 1: NamePtr
