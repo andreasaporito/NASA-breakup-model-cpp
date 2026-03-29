@@ -124,6 +124,7 @@ void SubCollision::calculateFragmentCount() {
             mass = sat2.getMass() * dv2 / 1e6;
         } else {
             _isCatastrophic = true;
+            // -------------- IN the original code there isnt the division by 1000 ------------------------
             mass = sat1.getMass() / 1000;
         }
     } else {

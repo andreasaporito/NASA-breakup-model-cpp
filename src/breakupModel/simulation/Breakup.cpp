@@ -65,7 +65,7 @@ void Breakup::areaToMassRatioDistribution() {
         mass = calculateMass(area, areaToMassRatio);
     });
 }
-
+// ----------------- Still to revise a bit not sure wheter it is the fastest way to navigate --------------------
 void Breakup::enforceMassConservation() {
     //Enforce Mass Conservation if the output mass is greater than the input mass
     _outputMass = std::reduce(std::execution::par_unseq,_output.mass.begin(), _output.mass.end(), 0.0);
