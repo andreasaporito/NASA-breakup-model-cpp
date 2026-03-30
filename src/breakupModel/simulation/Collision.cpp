@@ -11,24 +11,25 @@ void Collision::run() {
         std::swap(_input.at(0), _input.at(1));
     }
 
-    SubCollision sub1(_input, 1,
-                      _minimalCharacteristicLength,
-                      _currentMaxGivenID,
-                      _enforceMassConservation);
-    SubCollision sub2(_input, 2,
-                      _minimalCharacteristicLength,
-                      _currentMaxGivenID,
-                      _enforceMassConservation);
+    auto sub1 = std::make_unique<SubCollision>(
+        _input, 1, _minimalCharacteristicLength, 
+        _currentMaxGivenID, _enforceMassConservation
+    );
 
-    sub1.run();
-    sub2.run();
+    auto sub2 = std::make_unique<SubCollision>(
+        _input, 2, _minimalCharacteristicLength, 
+        _currentMaxGivenID, _enforceMassConservation
+    );
+
+    sub1->run();
+    sub2->run();
 
     // Merge both fragment sets into this Collision's _output
-    const size_t size1 = sub1.getResultSoA().size();
-    const size_t size2 = sub2.getResultSoA().size();
+    const size_t size1 = sub1->getResultSoA().size();
+    const size_t size2 = sub2->getResultSoA().size();
     _output.resize(size1 + size2);
-    _output.copyFrom(sub1.getResultSoA(), 0);
-    _output.copyFrom(sub2.getResultSoA(), size1);
+    _output.copyFrom(sub1->getResultSoA(), 0);
+    _output.copyFrom(sub2->getResultSoA(), size1);
 }
 
 void Collision::init() {
@@ -63,6 +64,7 @@ void Collision::addFurtherFragments() {
 
 void Collision::calculateFragmentCount() {}
 void Collision::assignParentProperties() {}
+void Collision::enforceMassConservation() {}
 
 SubCollision::SubCollision(std::vector<Satellite> input,
                            int cardinality,
@@ -75,6 +77,7 @@ SubCollision::SubCollision(std::vector<Satellite> input,
 {}
 
 void SubCollision::run() {
+    spdlog::info("Running SubCollision with cardinality {}.", _cardinality);
     Breakup::run();
 }
 
@@ -124,8 +127,7 @@ void SubCollision::calculateFragmentCount() {
             mass = sat2.getMass() * dv2 / 1e6;
         } else {
             _isCatastrophic = true;
-            // -------------- IN the original code there isnt the division by 1000 ------------------------
-            mass = sat1.getMass() / 1000;
+            mass = sat1.getMass();
         }
     } else {
         _maximalCharacteristicLength = sat2.getCharacteristicLength();
@@ -142,7 +144,7 @@ void SubCollision::calculateFragmentCount() {
             mass = sat1.getMass() * dv2 / 1e6;
         } else {
             _isCatastrophic = true;
-            mass = sat2.getMass() / 1000;
+            mass = sat2.getMass();
         }
     }
 
@@ -171,4 +173,66 @@ void SubCollision::addFurtherFragments() {
     // Both satellites may need remainder fragments; Collision::addFurtherFragments()
     // handles the _isCatastrophic gate internally
     Collision::addFurtherFragments();
+}
+
+void SubCollision::enforceMassConservation() {
+    //Enforce Mass Conservation if the output mass is greater than the input mass
+    _outputMass = std::reduce(std::execution::par_unseq,_output.mass.begin(), _output.mass.end(), 0.0);
+    spdlog::debug("The simulation got {} kg of input mass for fragments", _inputMass);
+    spdlog::debug("The simulation produced {} kg of debris", _outputMass);
+    size_t oldSize = _output.size();
+    size_t newSize = oldSize ;
+    const double epsilon = 1e-6;
+
+    // Build a permutation index sorted by mass descending
+    std::vector<size_t> idx(newSize);
+    std::iota(idx.begin(), idx.end(), 0);
+    std::sort(idx.begin(), idx.end(), [&](size_t a, size_t b) {
+        return _output.mass[a] < _output.mass[b]; // ascending order
+    });
+
+    // Apply the permutation in-place to every per-element vector in the SoA
+    auto applyPermutation = [&](auto& vec) {
+        using T = typename std::decay_t<decltype(vec)>::value_type;
+        std::vector<T> tmp(vec.size());
+        for (size_t i = 0; i < idx.size(); ++i) { tmp[i] = vec[idx[i]]; }
+        vec = std::move(tmp);
+    };
+    applyPermutation(_output.name);
+    applyPermutation(_output.characteristicLength);
+    applyPermutation(_output.areaToMassRatio);
+    applyPermutation(_output.mass);
+    applyPermutation(_output.area);
+    applyPermutation(_output.ejectionVelocity);
+    applyPermutation(_output.velocity);
+
+    if (_outputMass > _inputMass + epsilon) {
+
+        while (_outputMass > _inputMass && !_output.mass.empty()) {
+            _outputMass -= _output.mass.back();
+            _output.popBack();
+            newSize -= 1;
+        }
+
+        double gap = _inputMass - _outputMass;
+        if (gap > epsilon && _enforceMassConservation) {
+            this->addSingleFragment(gap); 
+        }
+    } 
+    else if (_inputMass > _outputMass + epsilon && _enforceMassConservation) {
+        if (_enforceMassConservation) {
+            this->addFurtherFragments();
+            
+            if (_output.size() != oldSize) {
+                this->enforceMassConservation();
+            }
+        }
+    }
+
+    // Some helpful logging hints
+    if (oldSize != newSize) {
+        spdlog::warn("The simulation modified the number of fragments to enforce the mass conservation in SubCollision {}.", _cardinality);
+        spdlog::warn("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
+    }
+    spdlog::warn("Initial mass was {} kg, final mass is {} kg.", _inputMass, _outputMass);
 }

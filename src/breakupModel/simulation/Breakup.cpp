@@ -41,6 +41,7 @@ void Breakup::init() {
 }
 
 void Breakup::generateFragments(size_t fragmentCount, const std::array<double, 3> &position) {
+    _initialPosition = position;
     _output = Satellites{_currentMaxGivenID+1, SatType::DEBRIS, position, fragmentCount};
 }
 
@@ -73,8 +74,7 @@ void Breakup::enforceMassConservation() {
     spdlog::debug("The simulation produced {} kg of debris", _outputMass);
     size_t oldSize = _output.size();
     size_t newSize = oldSize ;
-
-    // -- Step 1: sort all SoA vectors together by mass descending
+    const double epsilon = 1e-6;
 
     // Build a permutation index sorted by mass descending
     std::vector<size_t> idx(newSize);
@@ -98,38 +98,46 @@ void Breakup::enforceMassConservation() {
     applyPermutation(_output.ejectionVelocity);
     applyPermutation(_output.velocity);
 
-    // -- Step 2: pop heaviest fragments until within budget 
+    if (_outputMass > _inputMass + epsilon) {
 
-    while (_outputMass > _inputMass && newSize > 0) {
-        _outputMass -= _output.mass.back();
-        _output.popBack();
-        newSize -= 1;
-    }
+        while (_outputMass > _inputMass && !_output.mass.empty()) {
+            _outputMass -= _output.mass.back();
+            _output.popBack();
+            newSize -= 1;
+        }
 
-    // -- Step 3: overshot downward - add one fragment of exactly the gap ───
-    const double gap = _inputMass - _outputMass;
-    if (gap > 0.0) {
-        auto tuple = _output.appendElement();
-        auto& [lc, amr, area, mass] = tuple;
-        mass  = gap;
-        lc    = util::calculateCharacteristicLengthFromMass(mass);
-        amr   = calculateAreaMassRatio(lc);
-        area  = calculateArea(lc);
-        _outputMass += mass;
-        newSize += 1;
-    }
-
-    if (_enforceMassConservation && newSize == oldSize) {
-        this->addFurtherFragments();
-        newSize = _output.size();
+        double gap = _inputMass - _outputMass;
+        if (gap > epsilon && _enforceMassConservation) {
+            this->addSingleFragment(gap); 
+        }
+    } 
+    else if (_inputMass > _outputMass + epsilon && _enforceMassConservation) {
+        if (_enforceMassConservation) {
+            this->addFurtherFragments();
+            
+            if (_output.size() != oldSize) {
+                this->enforceMassConservation();
+            }
+        }
     }
 
     // Some helpful logging hints
-    if (oldSize != newSize) {
-        spdlog::warn("The simulation modified the number of fragments to enforce the mass conservation.");
+    if (oldSize != newSize) {        
         spdlog::warn("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
-        spdlog::debug("The simulation corrected to {} kg of debris", _outputMass);
     }
+    spdlog::warn("Initial mass was {} kg, final mass is {} kg.", _inputMass, _outputMass);
+}
+
+void Breakup::addSingleFragment(double mass) {
+    auto tuple = _output.appendElement();
+    auto& [lc, amr, area, m] = tuple;
+
+    m = mass;
+    lc = util::calculateCharacteristicLengthFromMass(m);
+    area = calculateArea(lc);
+    amr  = calculateAreaMassRatio(lc);
+    
+    _outputMass += m;
 }
 
 void Breakup::addFurtherFragments() {

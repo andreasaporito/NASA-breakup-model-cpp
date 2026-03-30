@@ -23,6 +23,8 @@ private:
     void calculateFragmentCount() override;
 
     void assignParentProperties() override;
+    
+    void enforceMassConservation() override;
 
 protected:
     void addFurtherFragments() override;
@@ -52,4 +54,5 @@ private:
     void calculateFragmentCount() override;
     void assignParentProperties() override;
     void addFurtherFragments() override;
+    void enforceMassConservation() override;
 };
