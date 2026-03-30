@@ -111,13 +111,9 @@ protected:
      * Contains the output satellites aka fragments of the collision or explosion
      */
     Satellites _output;
-//----------------------------------------------------------------------------
-    /**
-     * Initial position of the breakup event, derived from the input satellites. This is required for correctly setting the
-     * position of the single fragment in mass conservation -> Couldnt think of something better so far
-     */
-    std::array<double, 3> _initialPosition;
 
+    double _initialKineticEnergy;
+    std::vector<double> _initialMomentum;
 
 public:
 
@@ -315,6 +311,9 @@ protected:
     * @param mass - mass of the new fragment in [kg]
     */
     void addSingleFragment(double mass);
+
+    void enforceKineticEnergyConservation();
+    void enforceMomentumConservation();
 
 public:
 
