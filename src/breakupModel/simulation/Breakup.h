@@ -313,7 +313,9 @@ protected:
     void addSingleFragment(double mass);
 
     void enforceKineticEnergyConservation();
-    //void enforceMomentumConservation();
+    void enforceMomentumConservation();
+
+    std::array<double, 3> calculateCurrentMomentum();
 
 public:
 
