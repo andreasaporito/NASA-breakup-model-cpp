@@ -256,14 +256,17 @@ double Breakup::calculateMass(double area, double areaMassRatio) {
 }
 
 std::array<double, 3> Breakup::calculateVelocityVector(double velocity) {
-    std::uniform_real_distribution<> uniformRealDistribution{0.0, 1.0};
+    std::uniform_real_distribution<double> dist(-1.0, 1.0);
+    std::uniform_real_distribution<double> distPhi(0.0, 2.0 * util::PI);
+    double z = getRandomNumber(dist);
+    double phi = getRandomNumber(distPhi);
+    double xy_radius = std::sqrt(1 - z * z);
 
-    double u = getRandomNumber(uniformRealDistribution) * 2.0 - 1.0;
-    double theta = getRandomNumber(uniformRealDistribution) * 2.0 * util::PI;
-    double v = std::sqrt(1.0 - u * u);
-
-    return std::array<double, 3>
-            {{v * std::cos(theta) * velocity, v * std::sin(theta) * velocity, u * velocity}};
+    return {
+        velocity * xy_radius * std::cos(phi),
+        velocity * xy_radius * std::sin(phi),
+        velocity * z
+    };
 }
 
 void Breakup::enforceKineticEnergyConservation() {
