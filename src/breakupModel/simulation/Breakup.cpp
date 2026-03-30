@@ -1,4 +1,5 @@
 #include "Breakup.h"
+#include "breakupModel/util/UtilityFunctions.h"
 
 void Breakup::run() {
     //0. Step: Prepare constants, etc.
@@ -22,6 +23,8 @@ void Breakup::run() {
     //6. Step: Calculate the Ejection velocity for every Satellite
     this->deltaVelocityDistribution();
 
+    this->enforceKineticEnergyConservation();
+
     //7. Step: As a last step set the _currentMaxGivenID to the new valid value
     _currentMaxGivenID += _output.size();
 }
@@ -41,7 +44,7 @@ void Breakup::init() {
 }
 
 void Breakup::generateFragments(size_t fragmentCount, const std::array<double, 3> &position) {
-    _initialPosition = position;
+    //_ialPosition = position;
     _output = Satellites{_currentMaxGivenID+1, SatType::DEBRIS, position, fragmentCount};
 }
 
@@ -108,13 +111,13 @@ void Breakup::enforceMassConservation() {
 
         double gap = _inputMass - _outputMass;
         if (gap > epsilon && _enforceMassConservation) {
-            this->addSingleFragment(gap); 
+            this->addSingleFragment(gap);
         }
-    } 
+    }
     else if (_inputMass > _outputMass + epsilon && _enforceMassConservation) {
         if (_enforceMassConservation) {
             this->addFurtherFragments();
-            
+
             if (_output.size() != oldSize) {
                 this->enforceMassConservation();
             }
@@ -122,7 +125,7 @@ void Breakup::enforceMassConservation() {
     }
 
     // Some helpful logging hints
-    if (oldSize != newSize) {        
+    if (oldSize != newSize) {
         spdlog::warn("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
     }
     spdlog::warn("Initial mass was {} kg, final mass is {} kg.", _inputMass, _outputMass);
@@ -136,7 +139,7 @@ void Breakup::addSingleFragment(double mass) {
     lc = util::calculateCharacteristicLengthFromMass(m);
     area = calculateArea(lc);
     amr  = calculateAreaMassRatio(lc);
-    
+
     _outputMass += m;
 }
 
@@ -245,32 +248,46 @@ std::array<double, 3> Breakup::calculateVelocityVector(double velocity) {
 }
 
 void Breakup::enforceKineticEnergyConservation() {
-    // Current kinetic energy of the output fragments
-    double outputKineticEnergy = 0.5 * std::transform_reduce(std::execution::par_unseq,
-        _output.mass.begin(), _output.mass.end(), _output.velocity.begin(), 0.0,
-        [](double sum, const std::array<double, 3>& velocity) {
-            return sum + (velocity[0]*velocity[0] + velocity[1]*velocity[1] + velocity[2]*velocity[2]);
-        },
-        [](double mass, const std::array<double, 3>& velocity) {
-            return mass * (velocity[0]*velocity[0] + velocity[1]*velocity[1] + velocity[2]*velocity[2]);
+    
+    double outputKineticEnergy = std::transform_reduce(
+        std::execution::par_unseq,
+        _output.mass.begin(), 
+        _output.mass.end(),
+        _output.velocity.begin(),
+        0.0,
+        std::plus<>(),
+        [](double m, const std::array<double, 3>& v) {
+            return util::calculateKineticEnergy(m, v);
         }
     );
-    // Scale all the velocities by a factor according to the fragments mass, such that the KE is conserved
-    double scalingFactor = std::sqrt(_initialKineticEnergy / outputKineticEnergy);
-    std::for_each(std::execution::par_unseq, _output.velocity.begin(), _output.velocity.end(),
-        [&](std::array<double, 3>& velocity) {
-            velocity[0] *= scalingFactor;
-            velocity[1] *= scalingFactor;
-            velocity[2] *= scalingFactor;}
+
+    if (outputKineticEnergy > 1e-10) {
+        double scalingFactor = std::sqrt(_initialKineticEnergy / outputKineticEnergy);
+        
+        std::for_each(std::execution::par_unseq, _output.velocity.begin(), _output.velocity.end(),
+            [scalingFactor](std::array<double, 3>& v) {
+                v[0] *= scalingFactor;
+                v[1] *= scalingFactor;
+                v[2] *= scalingFactor;
+            }
         );
-    double outputKineticEnergy = 0.5 * std::transform_reduce(std::execution::par_unseq,
-        _output.mass.begin(), _output.mass.end(), _output.velocity.begin(), 0.0,
-        [](double sum, const std::array<double, 3>& velocity) {
-            return sum + (velocity[0]*velocity[0] + velocity[1]*velocity[1] + velocity[2]*velocity[2]);
-        },
-        [](double mass, const std::array<double, 3>& velocity) {
-            return mass * (velocity[0]*velocity[0] + velocity[1]*velocity[1] + velocity[2]*velocity[2]);
+
+        outputKineticEnergy = std::transform_reduce(
+        std::execution::par_unseq,
+        _output.mass.begin(), 
+        _output.mass.end(),
+        _output.velocity.begin(),
+        0.0,
+        std::plus<>(),
+        [](double m, const std::array<double, 3>& v) {
+            return util::calculateKineticEnergy(m, v);
         }
     );
-    spdlog::warn("Initial kinetic energy was {} J, final kinetic energy is {} J.", _initialKineticEnergy, outputKineticEnergy);
+
+    } else {
+        spdlog::error("Kinetic energy conservation failed: Output fragments have no velocity/mass.");
+    }
+
+    spdlog::warn("Initial kinetic energy was {} J, final kinetic energy is {} J.", 
+                 _initialKineticEnergy, outputKineticEnergy);
 }

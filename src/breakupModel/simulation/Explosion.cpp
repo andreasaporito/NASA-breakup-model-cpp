@@ -23,6 +23,8 @@ void Explosion::calculateFragmentCount() {
     //Sets the _input mass which will be required later for mass conservation purpose
     _inputMass = sat.getMass();
 
+    _initialKineticEnergy = util::calculateKineticEnergy(_inputMass, sat.getVelocity());
+
     //The fragment Count, respectively Equation 2
     auto fragmentCount = static_cast<size_t>(6.0 * std::pow(_minimalCharacteristicLength, -1.6));
     this->generateFragments(fragmentCount, sat.getPosition());

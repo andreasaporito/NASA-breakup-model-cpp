@@ -313,7 +313,7 @@ protected:
     void addSingleFragment(double mass);
 
     void enforceKineticEnergyConservation();
-    void enforceMomentumConservation();
+    //void enforceMomentumConservation();
 
 public:
 

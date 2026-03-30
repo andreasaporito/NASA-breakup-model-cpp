@@ -115,4 +115,14 @@ namespace util {
         return angle * Div180PI;
     }
 
+    /**
+     * Calculates kinetic energy for given mass and velocity vector
+     * @tparam T - type of the velocity vector (e.g., std::array<double, 3>)
+     * @param mass in [kg]
+     * @param velocity - velocity vector in [m/s]
+     * @return kinetic energy in [J]
+     */
+    inline double calculateKineticEnergy(double mass, const std::array<double, 3>& velocity) {
+        return 0.5 * mass * (velocity[0]*velocity[0] + velocity[1]*velocity[1] + velocity[2]*velocity[2]);}
+
 }
