@@ -180,6 +180,25 @@ void Breakup::deltaVelocityDistribution() {
         ejectionVelocity = calculateVelocityVector(velocityScalar);
         velocity = velocity + ejectionVelocity;
     });
+    auto output_momentum = std::transform_reduce(
+        std::execution::par_unseq,
+        _output.mass.begin(),
+        _output.mass.end(),
+        _output.velocity.begin(),
+        std::array<double, 3>{0.0, 0.0, 0.0},
+        [](const std::array<double, 3>& a, const std::array<double, 3>& b) {
+            return std::array<double, 3>{a[0] + b[0], a[1] + b[1], a[2] + b[2]};
+        },
+        [](double m, const std::array<double, 3>& v) {
+            return std::array<double, 3>{m * v[0], m * v[1], m * v[2]};
+        });
+    double momentumDifference = std::sqrt(std::pow(_initialMomentum[0] - output_momentum[0], 2) +
+                                        std::pow(_initialMomentum[1] - output_momentum[1], 2) +
+                                        std::pow(_initialMomentum[2] - output_momentum[2], 2));
+    spdlog::warn("Initial momentum was [{}, {}, {}] kg*m/s, final momentum is [{}, {}, {}] kg*m/s, difference is {} kg*m/s.",
+                 _initialMomentum[0], _initialMomentum[1], _initialMomentum[2],
+                 output_momentum[0], output_momentum[1], output_momentum[2],
+                 momentumDifference);
 }
 
 double Breakup::calculateCharacteristicLength() {

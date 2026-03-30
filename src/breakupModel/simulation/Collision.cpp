@@ -101,6 +101,7 @@ void SubCollision::calculateFragmentCount() {
     //Sets the _input mass which will be required later for mass conservation purpose (maximal upper bound)
     _inputMass = (_cardinality == 1) ? sat1.getMass() : sat2.getMass();
     _initialKineticEnergy = util::calculateKineticEnergy(_inputMass, (_cardinality == 1) ? sat1.getVelocity() : sat2.getVelocity());
+    _initialMomentum = util::calculateMomentum(_inputMass, (_cardinality == 1) ? sat1.getVelocity() : sat2.getVelocity());
 
     //Contains the mass M (later filled with an adequate value)
     double mass = 0;

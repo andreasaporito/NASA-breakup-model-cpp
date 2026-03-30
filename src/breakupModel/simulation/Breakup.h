@@ -113,7 +113,7 @@ protected:
     Satellites _output;
 
     double _initialKineticEnergy;
-    std::vector<double> _initialMomentum;
+    std::array<double, 3> _initialMomentum;
 
 public:
 

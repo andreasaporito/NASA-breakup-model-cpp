@@ -125,4 +125,8 @@ namespace util {
     inline double calculateKineticEnergy(double mass, const std::array<double, 3>& velocity) {
         return 0.5 * mass * (velocity[0]*velocity[0] + velocity[1]*velocity[1] + velocity[2]*velocity[2]);}
 
+    inline std::array<double, 3> calculateMomentum(double mass, const std::array<double, 3>& velocity) {
+        return {mass * velocity[0], mass * velocity[1], mass * velocity[2]};
+    }
+
 }
