@@ -233,6 +233,6 @@ void SubCollision::enforceMassConservation() {
 
     // Some helpful logging hints
     if (oldSize != newSize) {
-        spdlog::warn("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
+        spdlog::debug("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
     }
 }

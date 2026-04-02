@@ -31,7 +31,7 @@ void Breakup::run() {
     _currentMaxGivenID += _output.size();
 
     // Let's output all the mass, kinetic energy and momentum conservation values here
-    spdlog::warn("Initial mass was {} kg, final mass is {} kg.", _inputMass, _outputMass);
+    spdlog::debug("Initial mass was {} kg, final mass is {} kg.", _inputMass, _outputMass);
 
     double outputKineticEnergy = std::transform_reduce(
         std::execution::par_unseq,
@@ -47,14 +47,14 @@ void Breakup::run() {
     // Add the percentage difference in kinetic energy to the log message
     double kineticEnergyDifference = std::abs(outputKineticEnergy - _initialKineticEnergy);
     double kineticEnergyDifferencePercent = (kineticEnergyDifference / (_initialKineticEnergy + 1e-10)) * 100.0;
-    spdlog::warn("Initial kinetic energy was {} J, final kinetic energy is {} J. Difference is {} J ({}%).", 
+    spdlog::debug("Initial kinetic energy was {} J, final kinetic energy is {} J. Difference is {} J ({}%).", 
                  _initialKineticEnergy, outputKineticEnergy, kineticEnergyDifference, kineticEnergyDifferencePercent);
 
     std::array<double, 3> momentumDifference = {calculateCurrentMomentum()[0] - _initialMomentum[0], calculateCurrentMomentum()[1] - _initialMomentum[1], calculateCurrentMomentum()[2] - _initialMomentum[2]};
     double errorMagnitude = std::sqrt(momentumDifference[0]*momentumDifference[0] + momentumDifference[1]*momentumDifference[1] + momentumDifference[2]*momentumDifference[2]);
     double initialMomentumMagnitude = std::sqrt(_initialMomentum[0]*_initialMomentum[0] + _initialMomentum[1]*_initialMomentum[1] + _initialMomentum[2]*_initialMomentum[2]);
     double momentumDifferencePercent = (errorMagnitude / (initialMomentumMagnitude + 1e-10)) * 100.0;
-    spdlog::warn("Initial momentum was [{}, {}, {}] kg*m/s, final momentum is [{}, {}, {}] kg*m/s, difference is {} kg*m/s ({}%).",
+    spdlog::debug("Initial momentum was [{}, {}, {}] kg*m/s, final momentum is [{}, {}, {}] kg*m/s, difference is {} kg*m/s ({}%).",
                  _initialMomentum[0], _initialMomentum[1], _initialMomentum[2],
                  calculateCurrentMomentum()[0], calculateCurrentMomentum()[1], calculateCurrentMomentum()[2],
                  errorMagnitude, momentumDifferencePercent);
@@ -158,7 +158,7 @@ void Breakup::enforceMassConservation() {
 
     // Some helpful logging hints
     if (oldSize != newSize) {
-        spdlog::warn("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
+        spdlog::debug("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
     }
 }
 
