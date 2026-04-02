@@ -233,8 +233,6 @@ void SubCollision::enforceMassConservation() {
 
     // Some helpful logging hints
     if (oldSize != newSize) {
-        spdlog::warn("The simulation modified the number of fragments to enforce the mass conservation in SubCollision {}.", _cardinality);
         spdlog::warn("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
     }
-    spdlog::warn("Initial mass was {} kg, final mass is {} kg.", _inputMass, _outputMass);
 }

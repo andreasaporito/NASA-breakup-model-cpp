@@ -29,6 +29,36 @@ void Breakup::run() {
 
     //7. Step: As a last step set the _currentMaxGivenID to the new valid value
     _currentMaxGivenID += _output.size();
+
+    // Let's output all the mass, kinetic energy and momentum conservation values here
+    spdlog::warn("Initial mass was {} kg, final mass is {} kg.", _inputMass, _outputMass);
+
+    double outputKineticEnergy = std::transform_reduce(
+        std::execution::par_unseq,
+        _output.mass.begin(), 
+        _output.mass.end(),
+        _output.velocity.begin(),
+        0.0,
+        std::plus<>(),
+        [](double m, const std::array<double, 3>& v) {
+            return util::calculateKineticEnergy(m, v);
+        }
+    );
+    // Add the percentage difference in kinetic energy to the log message
+    double kineticEnergyDifference = std::abs(outputKineticEnergy - _initialKineticEnergy);
+    double kineticEnergyDifferencePercent = (kineticEnergyDifference / (_initialKineticEnergy + 1e-10)) * 100.0;
+    spdlog::warn("Initial kinetic energy was {} J, final kinetic energy is {} J. Difference is {} J ({}%).", 
+                 _initialKineticEnergy, outputKineticEnergy, kineticEnergyDifference, kineticEnergyDifferencePercent);
+
+    std::array<double, 3> momentumDifference = {calculateCurrentMomentum()[0] - _initialMomentum[0], calculateCurrentMomentum()[1] - _initialMomentum[1], calculateCurrentMomentum()[2] - _initialMomentum[2]};
+    double errorMagnitude = std::sqrt(momentumDifference[0]*momentumDifference[0] + momentumDifference[1]*momentumDifference[1] + momentumDifference[2]*momentumDifference[2]);
+    double initialMomentumMagnitude = std::sqrt(_initialMomentum[0]*_initialMomentum[0] + _initialMomentum[1]*_initialMomentum[1] + _initialMomentum[2]*_initialMomentum[2]);
+    double momentumDifferencePercent = (errorMagnitude / (initialMomentumMagnitude + 1e-10)) * 100.0;
+    spdlog::warn("Initial momentum was [{}, {}, {}] kg*m/s, final momentum is [{}, {}, {}] kg*m/s, difference is {} kg*m/s ({}%).",
+                 _initialMomentum[0], _initialMomentum[1], _initialMomentum[2],
+                 calculateCurrentMomentum()[0], calculateCurrentMomentum()[1], calculateCurrentMomentum()[2],
+                 errorMagnitude, momentumDifferencePercent);
+
 }
 
 Breakup &Breakup::setSeed(std::optional<unsigned long> seed) {
@@ -130,7 +160,6 @@ void Breakup::enforceMassConservation() {
     if (oldSize != newSize) {
         spdlog::warn("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
     }
-    spdlog::warn("Initial mass was {} kg, final mass is {} kg.", _inputMass, _outputMass);
 }
 
 void Breakup::addSingleFragment(double mass) {
@@ -182,25 +211,6 @@ void Breakup::deltaVelocityDistribution() {
         ejectionVelocity = calculateVelocityVector(velocityScalar);
         velocity = velocity + ejectionVelocity;
     });
-    auto output_momentum = std::transform_reduce(
-        std::execution::par_unseq,
-        _output.mass.begin(),
-        _output.mass.end(),
-        _output.velocity.begin(),
-        std::array<double, 3>{0.0, 0.0, 0.0},
-        [](const std::array<double, 3>& a, const std::array<double, 3>& b) {
-            return std::array<double, 3>{a[0] + b[0], a[1] + b[1], a[2] + b[2]};
-        },
-        [](double m, const std::array<double, 3>& v) {
-            return std::array<double, 3>{m * v[0], m * v[1], m * v[2]};
-        });
-    double momentumDifference = std::sqrt(std::pow(_initialMomentum[0] - output_momentum[0], 2) +
-                                        std::pow(_initialMomentum[1] - output_momentum[1], 2) +
-                                        std::pow(_initialMomentum[2] - output_momentum[2], 2));
-    spdlog::warn("Initial momentum was [{}, {}, {}] kg*m/s, final momentum is [{}, {}, {}] kg*m/s, difference is {} kg*m/s.",
-                 _initialMomentum[0], _initialMomentum[1], _initialMomentum[2],
-                 output_momentum[0], output_momentum[1], output_momentum[2],
-                 momentumDifference);
 }
 
 double Breakup::calculateCharacteristicLength() {
@@ -289,57 +299,41 @@ std::array<double, 3> Breakup::calculateCurrentMomentum(){
 
 void Breakup::enforceMomentumConservation() {
     auto currentP = calculateCurrentMomentum();
+    // Momentum error vector
     std::array<double, 3> error = {
         currentP[0] - _initialMomentum[0],
         currentP[1] - _initialMomentum[1],
         currentP[2] - _initialMomentum[2]
     };
+    // Tilt the velocity of all fragments in a way that the momentum error is reduced, 
+    // but the velocity direction is not changed significantly. This is a heuristic approach and may not be perfect, 
+    // but it should reduce the momentum error significantly.
+    for (size_t j = 0; j < _output.size(); ++j){
+        double mass = _output.mass[j];
+        auto &v = _output.velocity[j];
+        double vel_magnitude = std::sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 
-    for (int i= 0; i < 5; ++i) {
-        for (size_t j = 0; j < _output.size(); ++j){
-            double mass = _output.mass[j];
-            auto &v = _output.velocity[j];
-            double vel_magnitude = std::sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+        // Calculate how much this particle 'contributes' to the error
+        // 0.5 is a damping factor (tilting factor) to avoid over-correction
+        double factor = 0.5 / (_output.velocity.size() * mass);
 
-            // Calculate how much this particle 'contributes' to the error
-            double factor = 0.5 / (_output.velocity.size() * mass);
+        v[0] -= factor * error[0] / (vel_magnitude + 1e-10);
+        v[1] -= factor * error[1] / (vel_magnitude + 1e-10);
+        v[2] -= factor * error[2] / (vel_magnitude + 1e-10);
 
-            v[0] -= factor * error[0] / (vel_magnitude + 1e-10);
-            v[1] -= factor * error[1] / (vel_magnitude + 1e-10);
-            v[2] -= factor * error[2] / (vel_magnitude + 1e-10);
-
-            double newRescale = vel_magnitude / std::sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-            v[0] *= newRescale;
-            v[1] *= newRescale;
-            v[2] *= newRescale;
-        }
-
-        currentP = calculateCurrentMomentum();
-        error = {
-            currentP[0] - _initialMomentum[0],
-            currentP[1] - _initialMomentum[1],
-            currentP[2] - _initialMomentum[2]
-        };
+        double newRescale = vel_magnitude / std::sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+        v[0] *= newRescale;
+        v[1] *= newRescale;
+        v[2] *= newRescale;
     }
-    std::array<double, 3> momentumDifference = {calculateCurrentMomentum()[0] - _initialMomentum[0], calculateCurrentMomentum()[1] - _initialMomentum[1], calculateCurrentMomentum()[2] - _initialMomentum[2]};
-    double errorMagnitude = std::sqrt(momentumDifference[0]*momentumDifference[0] + momentumDifference[1]*momentumDifference[1] + momentumDifference[2]*momentumDifference[2]);
-    spdlog::warn("After enforcing momentum conservation, final momentum is [{}, {}, {}] kg*m/s, difference is {} kg*m/s.",
-                 currentP[0], currentP[1], currentP[2],
-                 errorMagnitude);
-    double currentKE = std::transform_reduce(
-        std::execution::par_unseq,
-        _output.mass.begin(), 
-        _output.mass.end(),
-        _output.velocity.begin(),
-        0.0,
-        std::plus<>(),
-        [](double m, const std::array<double, 3>& v) {
-            return util::calculateKineticEnergy(m, v);
-        }
-    );
-    double KE_difference = std::abs(currentKE - _initialKineticEnergy);
-    spdlog::warn("After enforcing momentum conservation, final kinetic energy is {} J, difference is {} J.",
-                 currentKE, KE_difference);
+
+    currentP = calculateCurrentMomentum();
+    error = {
+        currentP[0] - _initialMomentum[0],
+        currentP[1] - _initialMomentum[1],
+        currentP[2] - _initialMomentum[2]
+    };
+
 }
 
 void Breakup::enforceKineticEnergyConservation() {
@@ -367,22 +361,7 @@ void Breakup::enforceKineticEnergyConservation() {
             }
         );
 
-        outputKineticEnergy = std::transform_reduce(
-        std::execution::par_unseq,
-        _output.mass.begin(), 
-        _output.mass.end(),
-        _output.velocity.begin(),
-        0.0,
-        std::plus<>(),
-        [](double m, const std::array<double, 3>& v) {
-            return util::calculateKineticEnergy(m, v);
-        }
-    );
-
     } else {
         spdlog::error("Kinetic energy conservation failed: Output fragments have no velocity/mass.");
     }
-
-    spdlog::warn("Initial kinetic energy was {} J, final kinetic energy is {} J.", 
-                 _initialKineticEnergy, outputKineticEnergy);
 }
