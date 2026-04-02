@@ -1,0 +1,14 @@
+
+simulation:
+  minimalCharacteristicLength: 0.05
+  simulationType: COLLISION
+  inputSource: ["../example-config/CTwrtMinCL/data.yaml"]  # Use the custom satellite configuration with high relative velocity
+  enforceMassConservation: True
+
+inputOutput:
+  target: ["../results_analysis/CTwrtMinCL/input/input0_05.csv", "../results_analysis/CTwrtMinCL/input/input0_05.vtu"]
+  kepler: False
+
+resultOutput:
+  target: ["../results_analysis/CTwrtMinCL/output/output0_05.csv", "../results_analysis/CTwrtMinCL/output/output0_05.vtu"]
+  kepler: False
