@@ -1,6 +1,6 @@
 
 simulation:
-  minimalCharacteristicLength: 0.0001
+  minimalCharacteristicLength: 0.05
   simulationType: COLLISION
   inputSource: ["../example-config/CTwrtMinCL/data.yaml"]  # Use the custom satellite configuration with high relative velocity
   enforceMassConservation: True
