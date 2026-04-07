@@ -6,9 +6,9 @@ void Collision::run() {
     // need their own fully initialised state.
     this->init();
     this->_inputMass = this->_input.at(0).getMass() + this->_input.at(1).getMass();
-    this->_initialKineticEnergy = util::calculateKineticEnergy(this->_inputMass, this->_input.at(0).getVelocity()) + util::calculateKineticEnergy(this->_inputMass, this->_input.at(1).getVelocity());
-    std::array<double, 3> initialMomentum1 = util::calculateMomentum(this->_inputMass, this->_input.at(0).getVelocity());
-    std::array<double, 3> initialMomentum2 = util::calculateMomentum(this->_inputMass, this->_input.at(1).getVelocity());
+    this->_initialKineticEnergy = util::calculateKineticEnergy(this->_input.at(0).getMass(), this->_input.at(0).getVelocity()) + util::calculateKineticEnergy(this->_input.at(1).getMass(), this->_input.at(1).getVelocity());
+    std::array<double, 3> initialMomentum1 = util::calculateMomentum(this->_input.at(0).getMass(), this->_input.at(0).getVelocity());
+    std::array<double, 3> initialMomentum2 = util::calculateMomentum(this->_input.at(1).getMass(), this->_input.at(1).getVelocity());
     this->_initialMomentum = {initialMomentum1[0] + initialMomentum2[0], initialMomentum1[1] + initialMomentum2[1], initialMomentum1[2] + initialMomentum2[2]};
 
     // Ensure sat1 is always the bigger one (same invariant as before)

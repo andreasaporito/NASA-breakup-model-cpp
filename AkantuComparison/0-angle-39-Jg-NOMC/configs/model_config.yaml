@@ -2,6 +2,7 @@ simulation:
   minimalCharacteristicLength: 0.00027
   simulationType: COLLISION
   inputSource: [/home/andrea/LSMS_project/NASA-breakup-model-cpp/AkantuComparison/0-angle-39-Jg-NOMC/configs/data.yaml]
+  enforceMassConservation: true
 inputOutput:
   target: [/home/andrea/LSMS_project/NASA-breakup-model-cpp/AkantuComparison/0-angle-39-Jg-NOMC/input-output/input.csv,
     /home/andrea/LSMS_project/NASA-breakup-model-cpp/AkantuComparison/0-angle-39-Jg-NOMC/input-output/input.vtu]
