@@ -321,7 +321,7 @@ void Breakup::enforceMomentumConservation() {
         v[1] -= factor * error[1] / (vel_magnitude + 1e-10);
         v[2] -= factor * error[2] / (vel_magnitude + 1e-10);
 
-        double newRescale = vel_magnitude / std::sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+        double newRescale = vel_magnitude / (std::sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]) + 1e-10);
         v[0] *= newRescale;
         v[1] *= newRescale;
         v[2] *= newRescale;
@@ -350,7 +350,7 @@ void Breakup::enforceKineticEnergyConservation() {
         }
     );
 
-    if (outputKineticEnergy > 1e-10) {
+    if (outputKineticEnergy > 1e-10 && _initialKineticEnergy > 1e-10) {
         double scalingFactor = std::sqrt(_initialKineticEnergy / outputKineticEnergy);
         
         std::for_each(std::execution::par_unseq, _output.velocity.begin(), _output.velocity.end(),
@@ -361,7 +361,12 @@ void Breakup::enforceKineticEnergyConservation() {
             }
         );
 
-    } else {
+    }
+    else if (outputKineticEnergy > 1e-10 && _initialKineticEnergy < 1e-10) {
+        spdlog::error("Kinetic energy conservation failed: Initial kinetic energy is zero but output fragments have velocity/mass.");
+    }
+    else
+    {
         spdlog::error("Kinetic energy conservation failed: Output fragments have no velocity/mass.");
     }
 }
