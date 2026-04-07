@@ -23,21 +23,54 @@ void Breakup::run() {
     //6. Step: Calculate the Ejection velocity for every Satellite
     this->deltaVelocityDistribution();
 
-    this->enforceKineticEnergyConservation();
+    // this->enforceKineticEnergyConservation();
 
-    this->enforceMomentumConservation();
+    // this->enforceMomentumConservation();
 
-    //7. Step: As a last step set the _currentMaxGivenID to the new valid value
-    _currentMaxGivenID += _output.size();
+    // 7. Step: As a last step set the _currentMaxGivenID to the new valid value
+    // _currentMaxGivenID += _output.size();
 
     // Let's output all the mass, kinetic energy and momentum conservation values here
-    spdlog::debug("Initial mass was {} kg, final mass is {} kg.", _inputMass, _outputMass);
+    // spdlog::debug("Initial mass was {} kg, final mass is {} kg.", _inputMass, _outputMass);
 
+    // double outputKineticEnergy = std::transform_reduce(
+    //     std::execution::par_unseq,
+    //     _output.mass.begin(), 
+    //     _output.mass.end(),
+    //     _output.velocity.begin(),
+    //     0.0,
+    //     std::plus<>(),
+    //     [](double m, const std::array<double, 3>& v) {
+    //         return util::calculateKineticEnergy(m, v);
+    //     }
+    // );
+    // Add the percentage difference in kinetic energy to the log message
+    // double kineticEnergyDifference = std::abs(outputKineticEnergy - _initialKineticEnergy);
+    // double kineticEnergyDifferencePercent = (kineticEnergyDifference / (_initialKineticEnergy + 1e-10)) * 100.0;
+    // spdlog::debug("Initial kinetic energy was {} J, final kinetic energy is {} J. Difference is {} J ({}%).", 
+    //              _initialKineticEnergy, outputKineticEnergy, kineticEnergyDifference, kineticEnergyDifferencePercent);
+
+    // std::array<double, 3> momentumDifference = {calculateCurrentMomentum()[0] - _initialMomentum[0], calculateCurrentMomentum()[1] - _initialMomentum[1], calculateCurrentMomentum()[2] - _initialMomentum[2]};
+    // double errorMagnitude = std::sqrt(momentumDifference[0]*momentumDifference[0] + momentumDifference[1]*momentumDifference[1] + momentumDifference[2]*momentumDifference[2]);
+    // double initialMomentumMagnitude = std::sqrt(_initialMomentum[0]*_initialMomentum[0] + _initialMomentum[1]*_initialMomentum[1] + _initialMomentum[2]*_initialMomentum[2]);
+    // double momentumDifferencePercent = (errorMagnitude / (initialMomentumMagnitude + 1e-10)) * 100.0;
+    // spdlog::debug("Initial momentum was [{}, {}, {}] kg*m/s, final momentum is [{}, {}, {}] kg*m/s, difference is {} kg*m/s ({}%).",
+    //              _initialMomentum[0], _initialMomentum[1], _initialMomentum[2],
+    //              calculateCurrentMomentum()[0], calculateCurrentMomentum()[1], calculateCurrentMomentum()[2],
+    //              errorMagnitude, momentumDifferencePercent);
+
+}
+
+void Breakup::enforceEnergyAndMomentumConservation() {
+    this->enforceKineticEnergyConservation();
+    this->enforceMomentumConservation();
+    this->_currentMaxGivenID += this->_output.size();
+    spdlog::debug("Initial mass was {} kg, final mass is {} kg.", this->_inputMass, this->_outputMass);
     double outputKineticEnergy = std::transform_reduce(
         std::execution::par_unseq,
-        _output.mass.begin(), 
-        _output.mass.end(),
-        _output.velocity.begin(),
+        this->_output.mass.begin(), 
+        this->_output.mass.end(),
+        this->_output.velocity.begin(),
         0.0,
         std::plus<>(),
         [](double m, const std::array<double, 3>& v) {
@@ -45,20 +78,19 @@ void Breakup::run() {
         }
     );
     // Add the percentage difference in kinetic energy to the log message
-    double kineticEnergyDifference = std::abs(outputKineticEnergy - _initialKineticEnergy);
-    double kineticEnergyDifferencePercent = (kineticEnergyDifference / (_initialKineticEnergy + 1e-10)) * 100.0;
+    double kineticEnergyDifference = std::abs(outputKineticEnergy - this->_initialKineticEnergy);
+    double kineticEnergyDifferencePercent = (kineticEnergyDifference / (this->_initialKineticEnergy + 1e-10)) * 100.0;
     spdlog::debug("Initial kinetic energy was {} J, final kinetic energy is {} J. Difference is {} J ({}%).", 
-                 _initialKineticEnergy, outputKineticEnergy, kineticEnergyDifference, kineticEnergyDifferencePercent);
+                this->_initialKineticEnergy, outputKineticEnergy, kineticEnergyDifference, kineticEnergyDifferencePercent);
 
-    std::array<double, 3> momentumDifference = {calculateCurrentMomentum()[0] - _initialMomentum[0], calculateCurrentMomentum()[1] - _initialMomentum[1], calculateCurrentMomentum()[2] - _initialMomentum[2]};
+    std::array<double, 3> momentumDifference = {this->calculateCurrentMomentum()[0] - this->_initialMomentum[0], this->calculateCurrentMomentum()[1] - this->_initialMomentum[1], this->calculateCurrentMomentum()[2] - this->_initialMomentum[2]};
     double errorMagnitude = std::sqrt(momentumDifference[0]*momentumDifference[0] + momentumDifference[1]*momentumDifference[1] + momentumDifference[2]*momentumDifference[2]);
-    double initialMomentumMagnitude = std::sqrt(_initialMomentum[0]*_initialMomentum[0] + _initialMomentum[1]*_initialMomentum[1] + _initialMomentum[2]*_initialMomentum[2]);
+    double initialMomentumMagnitude = std::sqrt(this->_initialMomentum[0]*this->_initialMomentum[0] + this->_initialMomentum[1]*this->_initialMomentum[1] + this->_initialMomentum[2]*this->_initialMomentum[2]);
     double momentumDifferencePercent = (errorMagnitude / (initialMomentumMagnitude + 1e-10)) * 100.0;
     spdlog::debug("Initial momentum was [{}, {}, {}] kg*m/s, final momentum is [{}, {}, {}] kg*m/s, difference is {} kg*m/s ({}%).",
-                 _initialMomentum[0], _initialMomentum[1], _initialMomentum[2],
-                 calculateCurrentMomentum()[0], calculateCurrentMomentum()[1], calculateCurrentMomentum()[2],
-                 errorMagnitude, momentumDifferencePercent);
-
+                this->_initialMomentum[0], this->_initialMomentum[1], this->_initialMomentum[2],
+                this->calculateCurrentMomentum()[0], this->calculateCurrentMomentum()[1], this->calculateCurrentMomentum()[2],
+                errorMagnitude, momentumDifferencePercent);
 }
 
 Breakup &Breakup::setSeed(std::optional<unsigned long> seed) {

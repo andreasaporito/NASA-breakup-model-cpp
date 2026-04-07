@@ -5,7 +5,7 @@ satellites:
     mass: 1000.0                    # kg
     radius: 1.0                    # m
     position: [6800000, 0, 0]      
-    velocity: [5000, 0, 0]         
+    velocity: [0, 0, 0]         
   - id: 22675
     name: "Satellite 2"
     satType: SPACECRAFT

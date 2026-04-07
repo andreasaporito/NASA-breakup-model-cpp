@@ -5,6 +5,11 @@ void Collision::run() {
     // will also call it via Breakup::run(), which is correct since they each
     // need their own fully initialised state.
     this->init();
+    this->_inputMass = this->_input.at(0).getMass() + this->_input.at(1).getMass();
+    this->_initialKineticEnergy = util::calculateKineticEnergy(this->_inputMass, this->_input.at(0).getVelocity()) + util::calculateKineticEnergy(this->_inputMass, this->_input.at(1).getVelocity());
+    std::array<double, 3> initialMomentum1 = util::calculateMomentum(this->_inputMass, this->_input.at(0).getVelocity());
+    std::array<double, 3> initialMomentum2 = util::calculateMomentum(this->_inputMass, this->_input.at(1).getVelocity());
+    this->_initialMomentum = {initialMomentum1[0] + initialMomentum2[0], initialMomentum1[1] + initialMomentum2[1], initialMomentum1[2] + initialMomentum2[2]};
 
     // Ensure sat1 is always the bigger one (same invariant as before)
     if (_input.at(0).getCharacteristicLength() < _input.at(1).getCharacteristicLength()) {
@@ -30,6 +35,7 @@ void Collision::run() {
     _output.resize(size1 + size2);
     _output.copyFrom(sub1->getResultSoA(), 0);
     _output.copyFrom(sub2->getResultSoA(), size1);
+    _outputMass = std::reduce(std::execution::par_unseq,_output.mass.begin(), _output.mass.end(), 0.0);
 }
 
 void Collision::init() {

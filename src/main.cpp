@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
         auto breakUpSimulation = breakupBuilder.getBreakup();
         auto start = std::chrono::high_resolution_clock::now();
         breakUpSimulation->run();
+        breakUpSimulation->enforceEnergyAndMomentumConservation();
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = end - start;
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);

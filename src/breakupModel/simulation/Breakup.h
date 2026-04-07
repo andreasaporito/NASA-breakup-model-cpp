@@ -143,6 +143,8 @@ public:
      */
     virtual void run();
 
+    void enforceEnergyAndMomentumConservation();
+
     /**
      * Return the given input for this breakup event.
      * @return vector of satellites containing the input satellites

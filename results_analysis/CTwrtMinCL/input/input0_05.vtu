@@ -24,7 +24,7 @@
           0.012345333491798123
         </DataArray>
         <DataArray Name="velocity" NumberOfComponents="3" format="ascii" type="Float32">
-          5000 0 0
+          0 0 0
           -5000 0 0
         </DataArray>
         <DataArray Name="ejection-velocity" NumberOfComponents="3" format="ascii" type="Float32">
