@@ -70,7 +70,6 @@ void Collision::addFurtherFragments() {
 
 void Collision::calculateFragmentCount() {}
 void Collision::assignParentProperties() {}
-void Collision::enforceMassConservation() {}
 
 SubCollision::SubCollision(std::vector<Satellite> input,
                            int cardinality,
@@ -181,64 +180,4 @@ void SubCollision::addFurtherFragments() {
     // Both satellites may need remainder fragments; Collision::addFurtherFragments()
     // handles the _isCatastrophic gate internally
     Collision::addFurtherFragments();
-}
-
-void SubCollision::enforceMassConservation() {
-    //Enforce Mass Conservation if the output mass is greater than the input mass
-    _outputMass = std::reduce(std::execution::par_unseq,_output.mass.begin(), _output.mass.end(), 0.0);
-    spdlog::debug("The simulation got {} kg of input mass for fragments", _inputMass);
-    spdlog::debug("The simulation produced {} kg of debris", _outputMass);
-    size_t oldSize = _output.size();
-    size_t newSize = oldSize ;
-    const double epsilon = 1e-6;
-
-    // Build a permutation index sorted by mass descending
-    std::vector<size_t> idx(newSize);
-    std::iota(idx.begin(), idx.end(), 0);
-    std::sort(idx.begin(), idx.end(), [&](size_t a, size_t b) {
-        return _output.mass[a] < _output.mass[b]; // ascending order
-    });
-
-    // Apply the permutation in-place to every per-element vector in the SoA
-    auto applyPermutation = [&](auto& vec) {
-        using T = typename std::decay_t<decltype(vec)>::value_type;
-        std::vector<T> tmp(vec.size());
-        for (size_t i = 0; i < idx.size(); ++i) { tmp[i] = vec[idx[i]]; }
-        vec = std::move(tmp);
-    };
-    applyPermutation(_output.name);
-    applyPermutation(_output.characteristicLength);
-    applyPermutation(_output.areaToMassRatio);
-    applyPermutation(_output.mass);
-    applyPermutation(_output.area);
-    applyPermutation(_output.ejectionVelocity);
-    applyPermutation(_output.velocity);
-
-    if (_outputMass > _inputMass + epsilon) {
-
-        while (_outputMass > _inputMass && !_output.mass.empty()) {
-            _outputMass -= _output.mass.back();
-            _output.popBack();
-            newSize -= 1;
-        }
-
-        double gap = _inputMass - _outputMass;
-        if (gap > epsilon && _enforceMassConservation) {
-            this->addSingleFragment(gap); 
-        }
-    } 
-    else if (_inputMass > _outputMass + epsilon && _enforceMassConservation) {
-        if (_enforceMassConservation) {
-            this->addFurtherFragments();
-            
-            if (_output.size() != oldSize) {
-                this->enforceMassConservation();
-            }
-        }
-    }
-
-    // Some helpful logging hints
-    if (oldSize != newSize) {
-        spdlog::debug("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
-    }
 }

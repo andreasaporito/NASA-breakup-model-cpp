@@ -63,7 +63,7 @@ void Breakup::run() {
 
 void Breakup::enforceEnergyAndMomentumConservation() {
     this->enforceKineticEnergyConservation();
-    this->enforceMomentumConservation();
+    //this->enforceMomentumConservation();
     this->_currentMaxGivenID += this->_output.size();
     spdlog::debug("Initial mass was {} kg, final mass is {} kg.", this->_inputMass, this->_outputMass);
     double outputKineticEnergy = std::transform_reduce(
@@ -179,19 +179,21 @@ void Breakup::enforceMassConservation() {
         }
     }
     else if (_inputMass > _outputMass + epsilon && _enforceMassConservation) {
-        if (_enforceMassConservation) {
-            this->addFurtherFragments();
+        spdlog::debug("The output mass is smaller than the input mass by {} kg. Adding fragments to enforce mass conservation.", _inputMass - _outputMass);
+        this->addFurtherFragments();
 
-            if (_output.size() != oldSize) {
+        if (_output.size() != oldSize) {
+            spdlog::debug("Added {} fragments to enforce mass conservation.", _output.size() - oldSize);
                 this->enforceMassConservation();
             }
-        }
     }
-
+    
+    newSize = _output.size();
     // Some helpful logging hints
     if (oldSize != newSize) {
         spdlog::debug("The fragment count was adapted from {} to {} fragments.", oldSize, newSize);
     }
+    spdlog::debug("The final output mass is {} kg, the input mass was {} kg.", _outputMass, _inputMass);
 }
 
 void Breakup::addSingleFragment(double mass) {
@@ -221,8 +223,8 @@ void Breakup::addFurtherFragments() {
         _outputMass += mass;
     }
     //Remove the element which has lead to the exceeding of the mass budget
-    _outputMass -= _output.mass.back();
-    _output.popBack();
+    //_outputMass -= _output.mass.back();
+    //_output.popBack();
 }
 
 void Breakup::deltaVelocityDistribution() {
@@ -382,23 +384,28 @@ void Breakup::enforceKineticEnergyConservation() {
         }
     );
 
-    if (outputKineticEnergy > 1e-10 && _initialKineticEnergy > 1e-10) {
-        double scalingFactor = std::sqrt(_initialKineticEnergy / outputKineticEnergy);
-        
-        std::for_each(std::execution::par_unseq, _output.velocity.begin(), _output.velocity.end(),
-            [scalingFactor](std::array<double, 3>& v) {
-                v[0] *= scalingFactor;
-                v[1] *= scalingFactor;
-                v[2] *= scalingFactor;
-            }
-        );
-
+    if (outputKineticEnergy > _initialKineticEnergy + 1e-10) {
+        spdlog::debug("Output kinetic energy is greater than initial kinetic energy by {} J. Scaling down velocities to enforce kinetic energy conservation.", outputKineticEnergy - _initialKineticEnergy);
+        if (outputKineticEnergy > 1e-10 && _initialKineticEnergy > 1e-10) {
+            double scalingFactor = std::sqrt(_initialKineticEnergy / outputKineticEnergy);
+            
+            std::for_each(std::execution::par_unseq, _output.velocity.begin(), _output.velocity.end(),
+                [scalingFactor](std::array<double, 3>& v) {
+                    v[0] *= scalingFactor;
+                    v[1] *= scalingFactor;
+                    v[2] *= scalingFactor;
+                }
+            );
+        }
+            else if (outputKineticEnergy > 1e-10 && _initialKineticEnergy < 1e-10) {
+                spdlog::error("Kinetic energy conservation failed: Initial kinetic energy is zero but output fragments have velocity/mass.");
+        }
+            else
+        {
+                spdlog::error("Kinetic energy conservation failed: Output fragments have no velocity/mass.");
+        }
     }
-    else if (outputKineticEnergy > 1e-10 && _initialKineticEnergy < 1e-10) {
-        spdlog::error("Kinetic energy conservation failed: Initial kinetic energy is zero but output fragments have velocity/mass.");
-    }
-    else
-    {
-        spdlog::error("Kinetic energy conservation failed: Output fragments have no velocity/mass.");
+    else {
+        spdlog::debug("Output kinetic energy is smaller than initial kinetic energy by {} J. No scaling applied, we assume this to be a dissipation loss.", _initialKineticEnergy - outputKineticEnergy);
     }
 }
