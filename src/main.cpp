@@ -38,11 +38,8 @@ int main(int argc, char *argv[]) {
         auto breakUpSimulation = breakupBuilder.getBreakup();
         auto start = std::chrono::high_resolution_clock::now();
         breakUpSimulation->run();
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = end - start;
-        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
-        spdlog::info("The simulation took {} ms", ms.count());
-        spdlog::info("The simulation produced {} fragments", breakUpSimulation->getResultSoA().size());
+        
+        
 
         //Prints the the output to files defined by the OutputConfigurationSource aka the YAMLConfigurationReader
         auto outputTargets = configSource->getOutputTargets();
@@ -54,6 +51,13 @@ int main(int argc, char *argv[]) {
         for (auto &inOut : inputTargets) {
             inOut->printResult(breakUpSimulation->getInput());
         }
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = end - start;
+
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+        
+        spdlog::info("The simulation took {} ms", ms.count());
+        spdlog::info("The simulation produced {} fragments", breakUpSimulation->getResultSoA().size());
     } catch (std::exception &e) {
         spdlog::error(e.what());
     }
